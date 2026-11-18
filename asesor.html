@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal del Asesor - Martec</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
+    
+    * {
+      box-sizing: border-box;
+    }
+
+    :root { 
+      --primary: #3b82f6;
+      --primary-grad: linear-gradient(135deg, #06b6d4 0%, #3b82f6 55%, #6366f1 100%);
+      --text-main: #0f172a; 
+      --text-light: #64748b; 
+      --shadow-relief: 0 12px 30px -8px rgba(59, 130, 246, 0.14), 0 4px 12px -2px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1);
+      --radius-md: 12px; 
+      --radius-lg: 20px; 
+    }
+    
+    body, html { 
+      margin: 0; 
+      padding: 0; 
+      width: 100%;
+      height: 100%; 
+      font-family: 'Outfit', sans-serif; 
+      background-color: #ffffff;
+      background-image:
+        radial-gradient(circle at 18% 10%, rgba(6, 182, 212, 0.09) 0%, transparent 38%),
+        radial-gradient(circle at 92% 88%, rgba(99, 102, 241, 0.11) 0%, transparent 40%);
+      color: var(--text-main); 
+      display: flex; 
+      overflow: hidden; 
+    }
+    
+    .sidebar { 
+      width: 265px; 
+      flex-shrink: 0;
+      background: #ffffff; 
+      color: var(--text-main); 
+      display: flex; 
+      flex-direction: column; 
+      border-right: 1px solid #e2e8f0;
+      box-shadow: 6px 0 30px rgba(37, 99, 235, 0.07);
+      z-index: 10; 
+    }
+    
+    .sidebar-brand { 
+      padding: 24px; 
+      border-bottom: 1px solid #f1f5f9; 
+    }
+    
+    .sidebar-brand h2 { 
+      margin: 0; 
+      font-size: 26px; 
+      font-weight: 900;
+      letter-spacing: -0.8px;
+      background: linear-gradient(135deg, #0f172a, #2563eb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .sidebar-brand span {
+      font-size: 11px;
+      color: #06b6d4;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+    }
+    
+    .menu { 
+      list-style: none; 
+      padding: 18px 14px; 
+      margin: 0; 
+      flex: 1; 
+    }
+    
+    .menu li { 
+      padding: 13px 16px; 
+      margin-bottom: 8px; 
+      cursor: pointer; 
+      border-radius: 14px; 
+      color: #475569; 
+      font-weight: 600; 
+      font-size: 14px; 
+      transition: all 0.25s ease; 
+    }
+    
+    .menu li:hover { 
+      background-color: #f0f9ff; 
+      color: #2563eb;
+      transform: translateX(4px);
+    }
+
+    .menu li.active {
+      background: var(--primary-grad);
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 10px 20px -6px rgba(59, 130, 246, 0.55), inset 0 1px 2px rgba(255,255,255,0.35);
+    }
+    
+    .menu-logout { 
+      margin-top: auto; 
+      color: #e11d48 !important; 
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .menu-logout:hover {
+      background-color: #fff1f2 !important;
+      color: #be123c !important;
+    }
+    
+    .main-wrapper { 
+      flex: 1; 
+      min-width: 0;
+      width: 100%;
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden; 
+      background: transparent; 
+    }
+    
+    .topbar { 
+      height: 74px; 
+      width: 100%;
+      background: rgba(255, 255, 255, 0.85); 
+      backdrop-filter: blur(12px); 
+      border-bottom: 1px solid #e2e8f0; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 0 32px; 
+    }
+    
+    .topbar-title { 
+      font-size: 20px; 
+      font-weight: 800; 
+      color: #0f172a; 
+    }
+    
+    .user-zone { 
+      display: flex; 
+      align-items: center; 
+      gap: 16px; 
+    }
+    
+    .badge-rango { 
+      background: linear-gradient(135deg, #fef08a, #fde047); 
+      color: #854d0e; 
+      padding: 6px 14px; 
+      border-radius: 999px; 
+      font-size: 11px; 
+      font-weight: 800; 
+      text-transform: uppercase; 
+      box-shadow: 0 4px 12px rgba(234, 179, 8, 0.25);
+    }
+    
+    .xp-text { 
+      font-size: 14px; 
+      font-weight: 900; 
+      color: #2563eb; 
+    }
+    
+    .bell-icon { 
+      position: relative; 
+      font-size: 20px; 
+      cursor: pointer; 
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: 0.2s;
+    }
+
+    .bell-icon:hover {
+      background: #f0f9ff;
+      border-color: #3b82f6;
+    }
+    
+    .notif-badge { 
+      position: absolute; 
+      top: -4px; 
+      right: -4px; 
+      background: linear-gradient(135deg, #f43f5e, #e11d48); 
+      color: white; 
+      width: 18px; 
+      height: 18px; 
+      border-radius: 50%; 
+      font-size: 10px; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      font-weight: 800; 
+    }
+    
+    .notif-panel { 
+      display: none; 
+      position: absolute; 
+      top: 68px; 
+      right: 110px; 
+      width: 310px; 
+      background: #ffffff; 
+      border-radius: 18px; 
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18); 
+      border: 1px solid #e2e8f0; 
+      z-index: 100; 
+      max-height: 400px; 
+      overflow-y: auto; 
+    }
+    
+    .notif-item { 
+      padding: 15px 18px; 
+      border-bottom: 1px solid #f1f5f9; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 4px; 
+      cursor: pointer;
+    }
+    
+    .notif-item:hover { 
+      background: #f0f9ff; 
+    }
+    
+    .notif-msg { 
+      font-size: 13px; 
+      font-weight: 600; 
+      color: #0f172a; 
+    }
+    
+    .notif-date { 
+      font-size: 10px; 
+      color: #64748b; 
+    }
+
+    .main-content { 
+      flex: 1; 
+      width: 100%;
+      padding: 32px; 
+      overflow-y: auto; 
+    }
+    
+    .btn-start { 
+      width: 100%; 
+      padding: 15px; 
+      background: var(--primary-grad); 
+      color: #ffffff; 
+      font-weight: 800; 
+      font-size: 15px; 
+      font-family: 'Outfit', sans-serif;
+      border: none; 
+      border-radius: 14px; 
+      cursor: pointer;
+      box-shadow: 0 10px 22px -6px rgba(59, 130, 246, 0.55), inset 0 2px 2px rgba(255,255,255,0.35);
+      transition: 0.25s;
+    }
+
+    .btn-start:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px -6px rgba(99, 102, 241, 0.65);
+    }
+    
+    .table-container { 
+      width: 100%;
+      background: #ffffff; 
+      border-radius: var(--radius-lg); 
+      border: 1px solid #e2e8f0;
+      padding: 26px; 
+      box-shadow: var(--shadow-relief); 
+      display: none;
+      overflow-x: auto;
+    }
+    
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      text-align: left; 
+    }
+    
+    th { 
+      padding: 14px 16px; 
+      background: #f8fafc;
+      border-bottom: 2px solid #e2e8f0; 
+      font-size: 11px; 
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      color: #64748b; 
+    }
+    
+    td { 
+      padding: 15px 16px; 
+      border-bottom: 1px solid #f1f5f9; 
+      font-size: 13px; 
+      font-weight: 600; 
+    }
+    
+    .btn-action { 
+      padding: 8px 15px; 
+      background: var(--primary-grad); 
+      color: #ffffff; 
+      border: none; 
+      border-radius: 10px; 
+      font-weight: 700; 
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px; 
+      cursor: pointer;
+      box-shadow: 0 6px 14px -4px rgba(59, 130, 246, 0.45);
+    }
+
+    .modal-overlay { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(6px);
+      display: none; 
+      justify-content: center; 
+      align-items: center; 
+      z-index: 1000; 
+    }
+    
+    .modal-box { 
+      width: 90%; 
+      max-width: 820px; 
+      height: 85vh;
+      background: #ffffff; 
+      border-radius: 24px; 
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden; 
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.3);
+      border: 1px solid #e2e8f0;
+    }
+    
+    .modal-box.dark-mode { 
+      background: #0f172a; 
+      max-width: 1100px; 
+      border: 1px solid rgba(255,255,255,0.12); 
+    }
+    
+    .modal-header { 
+      padding: 18px 24px; 
+      background: var(--primary-grad); 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+    
+    .modal-content-area { 
+      flex: 1; 
+      overflow-y: auto; 
+      padding: 22px; 
+      background: #f8fafc;
+      height: 100%;
+    }
+    
+    .modal-box.dark-mode .modal-content-area { 
+      padding: 0; 
+      background: #000000; 
+      overflow: hidden;
+    }
+    
+    .eval-row { 
+      background: #ffffff; 
+      border: 1px solid #e2e8f0; 
+      border-radius: 14px; 
+      padding: 16px; 
+      margin-bottom: 14px; 
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    }
+    
+    .feedback-alert { 
+      background: #fef9c3; 
+      border-left: 4px solid #eab308; 
+      padding: 15px; 
+      margin-bottom: 20px; 
+      border-radius: 10px; 
+      font-size: 14px; 
+      color: #854d0e; 
+    }
+    
+    .watermark { 
+      position: fixed; 
+      bottom: 10px; 
+      right: 16px; 
+      font-size: 11px; 
+      color: #94a3b8; 
+      font-weight: 700; 
+      z-index: 9999; 
+      letter-spacing: 0.6px; 
+      text-transform: uppercase;
+    }
+    
+    /* MATERIALES TARJETAS FUTURISTAS BLANCAS CON RELIEVE */
+    .materiales-grid { 
+      width: 100%;
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+      gap: 26px; 
+      padding-bottom: 40px; 
+    }
+    
+    .card { 
+      background-color: #ffffff; 
+      border-radius: 22px; 
+      border: 1px solid #e2e8f0; 
+      box-shadow: var(--shadow-relief); 
+      overflow: hidden; 
+      display: flex; 
+      flex-direction: column; 
+      transition: all 0.35s ease; 
+      position: relative; 
+    }
+    
+    .card:hover { 
+      transform: translateY(-8px); 
+      box-shadow: 0 22px 40px -10px rgba(59, 130, 246, 0.25); 
+      border-color: #3b82f6; 
+    }
+    
+    .card-preview { 
+      height: 170px; 
+      background: linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%); 
+      position: relative; 
+      overflow: hidden; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      border-bottom: 1px solid #f1f5f9; 
+    }
+    
+    .tech-pattern { 
+      position: absolute; 
+      top: 0; left: 0; right: 0; bottom: 0; 
+      background-image: linear-gradient(rgba(59, 130, 246, 0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.12) 1px, transparent 1px); 
+      background-size: 20px 20px; 
+      z-index: 1; 
+    }
+    
+    .tech-glow { 
+      position: absolute; 
+      width: 110px; 
+      height: 110px; 
+      background: #3b82f6; 
+      filter: blur(55px); 
+      opacity: 0.25; 
+      z-index: 2; 
+    }
+    
+    .card-preview img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      transition: transform 0.5s ease; 
+      z-index: 3; 
+    }
+    
+    .card:hover .card-preview img { 
+      transform: scale(1.08); 
+    }
+    
+    .preview-icon { 
+      width: 64px; 
+      height: 64px; 
+      z-index: 4; 
+      fill: #2563eb; 
+      filter: drop-shadow(0 8px 16px rgba(59, 130, 246, 0.35)); 
+      transition: transform 0.35s ease; 
+    }
+    
+    .card:hover .preview-icon { 
+      transform: scale(1.12) translateY(-4px); 
+    }
+    
+    .play-icon { 
+      position: absolute; 
+      width: 58px; 
+      height: 58px; 
+      background: var(--primary-grad); 
+      border-radius: 50%; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      color: #ffffff; 
+      font-size: 22px; 
+      padding-left: 4px; 
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.55); 
+      z-index: 5; 
+      transition: all 0.3s ease; 
+    }
+    
+    .card:hover .play-icon { 
+      transform: scale(1.1); 
+    }
+    
+    .card-body { 
+      padding: 22px; 
+      flex: 1; 
+      display: flex; 
+      flex-direction: column; 
+      background: #ffffff; 
+    }
+    
+    .card-title { 
+      margin: 0 0 8px 0; 
+      font-size: 16px; 
+      font-weight: 800; 
+      color: #0f172a; 
+      line-height: 1.4; 
+      text-transform: uppercase; 
+    }
+    
+    .card-desc { 
+      margin: 0; 
+      font-size: 13px; 
+      color: #64748b; 
+      display: -webkit-box; 
+      -webkit-line-clamp: 3; 
+      -webkit-box-orient: vertical; 
+      overflow: hidden; 
+    }
+    
+    .card-footer { 
+      padding: 0 22px 22px; 
+      background: #ffffff; 
+    }
+    
+    .btn-ver { 
+      width: 100%; 
+      padding: 12px; 
+      border: none; 
+      border-radius: 12px; 
+      background: var(--primary-grad); 
+      color: #ffffff; 
+      font-weight: 800; 
+      font-size: 13px; 
+      font-family: 'Outfit', sans-serif; 
+      letter-spacing: 0.8px; 
+      cursor: pointer; 
+      box-shadow: 0 8px 18px -5px rgba(59, 130, 246, 0.45);
+      transition: all 0.25s ease; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      gap: 10px; 
+    }
+    
+    .btn-ver:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -5px rgba(99, 102, 241, 0.6); 
+    }
+    
+    .loading-container { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      height: 50vh; 
+      color: #64748b; 
+      font-weight: 700; 
+      font-size: 16px; 
+    }
+    
+    .spinner { 
+      border: 4px solid #e2e8f0; 
+      border-top: 4px solid #3b82f6; 
+      border-radius: 50%; 
+      width: 40px; 
+      height: 40px; 
+      animation: spin 0.9s linear infinite; 
+      margin-bottom: 15px; 
+    }
+
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  
+  <div class="watermark">Desarrollado por Jonatan Santiago Guerrero</div>
+
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <h2>martec</h2>
+      <span>Portal Asesor</span>
+    </div>
+    <ul class="menu">
+      <li id="tab-material" class="active" onclick="switchTab('Material')">📚 Centro de Capacitación</li>
+      <li id="tab-examen" onclick="switchTab('Examen')">📝 Rendir Evaluación</li>
+      <li id="tab-historial" onclick="switchTab('Historial')">📊 Mis Calificaciones</li>
+      <li class="menu-logout" onclick="window.location.href='index.html'">🚪 Cerrar Sesión</li>
+    </ul>
+  </div>
+
+  <div class="main-wrapper">
+    <div class="topbar">
+      <div class="topbar-title" id="titulo-seccion">Centro de Capacitación</div>
+      <div class="user-zone">
+         <div class="badge-rango" id="rango-asesor">NOVATO</div>
+         <div class="xp-text" id="xp-asesor">0 XP</div>
+         <div class="bell-icon" onclick="toggleNotif()">
+            🔔 <div class="notif-badge" id="notif-count" style="display:none;">0</div>
+         </div>
+         <span id="nombre-asesor" style="font-weight:800; font-size:14px;">User</span>
+      </div>
+    </div>
+    
+    <div class="notif-panel" id="notif-panel"></div>
+
+    <div class="main-content">
+      
+      <div id="loading" class="loading-container">
+         <div class="spinner"></div>Sincronizando información...
+      </div>
+
+      <!-- VISTA MATERIALES -->
+      <div class="materiales-grid" id="grid-materiales" style="display: none;"></div>
+
+      <!-- VISTA HISTORIAL NOTAS -->
+      <div class="table-container" id="vista-historial">
+         <h2 style="margin-top:0; font-weight:800;">Historial de Evaluaciones</h2>
+         <table>
+           <thead>
+             <tr>
+               <th>Examen Rendido</th>
+               <th>Nota Final</th>
+               <th>Fecha Envio</th>
+               <th>Corrección / Feedback</th>
+             </tr>
+           </thead>
+           <tbody id="body-historial-asesor"></tbody>
+         </table>
+      </div>
+
+      <!-- VISTA RENDIR EXÁMENES -->
+      <div class="table-container" id="vista-examen" style="padding:40px; text-align:center;">
+         <div id="pantalla-ingreso">
+             <h2 style="font-weight:800; margin-top:0;">Acceso a Evaluación</h2>
+             <p style="color:#64748b;">Ingresa el código que te brindó tu supervisor.</p>
+             <input type="text" id="codigo-examen" style="padding:15px; font-size:18px; text-align:center; font-weight:800; font-family:'Outfit', sans-serif; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc; margin-bottom:20px; width:100%; max-width:400px; box-sizing:border-box; outline:none;" placeholder="CÓDIGO DE ACCESO">
+             <br><button class="btn-start" style="max-width:400px;" onclick="iniciarExamen()">INGRESAR AHORA</button>
+             <div id="msg-examen" style="margin-top:15px; font-weight:700; color:#e11d48;"></div>
+         </div>
+         
+         <div id="pantalla-cuestionario" style="display:none; text-align:left;">
+             <h2 id="titulo-examen" style="color:#2563eb; font-weight:800;">Evaluación</h2>
+             <div id="caja-preguntas"></div>
+             <button class="btn-start" style="margin-top:20px;" onclick="enviarExamen()">ENVIAR MIS RESPUESTAS</button>
+         </div>
+         
+         <div id="pantalla-resultado" style="display:none; text-align:center;">
+             <h1 style="font-size:48px; color:#2563eb; margin:0; font-weight:900;" id="nota-final">0 Pts</h1>
+             <p style="font-size:18px; font-weight:700;">¡Examen Finalizado con Éxito!</p>
+             <p style="color:var(--text-light);">Ganaste XP que se sumará a tu perfil.</p>
+             <button class="btn-action" style="margin-top:20px; padding:12px 24px;" onclick="switchTab('Historial')">Ver Historial</button>
+         </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL GENERAL (Materiales y Feedback) -->
+  <div class="modal-overlay" id="modal-general">
+    <div class="modal-box" id="modal-caja">
+      <div class="modal-header">
+          <h3 style="margin:0; color:white; font-weight:800;" id="modal-title">Revisión</h3>
+          <button style="background:none; border:none; color:white; font-size:20px; cursor:pointer;" onclick="cerrarModal()">✕</button>
+      </div>
+      <div class="modal-content-area" id="modal-content"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyb5U31hqfuy9v36Q-gMTchEp7NK8MVIf66V_2UxLbyBo6gOk02Gh0Icy-5qOyItWMz/exec';
+    
+    let dataAsesor = {}; 
+    let perfilBD = {}; 
+    let examenActual = null; 
+    let preguntasExamen = []; 
+    let misResultadosGlobal = []; 
+    let examenesList = []; 
+    let misNotificaciones = [];
+
+    window.onload = () => {
+        const userData = localStorage.getItem('martec_user');
+        if(userData) { 
+            dataAsesor = JSON.parse(userData); 
+            document.getElementById('nombre-asesor').innerText = dataAsesor.usuario; 
+        }
+        cargarDatosAsesor();
+    };
+
+    function switchTab(tab) {
+        document.querySelectorAll('.menu li').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-' + tab.toLowerCase()).classList.add('active');
+        
+        document.getElementById('grid-materiales').style.display = tab === 'Material' ? 'grid' : 'none';
+        document.getElementById('vista-examen').style.display = tab === 'Examen' ? 'block' : 'none';
+        document.getElementById('vista-historial').style.display = tab === 'Historial' ? 'block' : 'none';
+        
+        let titulos = { 
+            'Material': 'Centro de Capacitación', 
+            'Examen': 'Rendir Evaluación', 
+            'Historial': 'Mis Calificaciones y Avance' 
+        };
+        
+        document.getElementById('titulo-seccion').innerText = titulos[tab];
+
+        if(tab !== 'Examen') { 
+            document.getElementById('pantalla-cuestionario').style.display = 'none'; 
+            document.getElementById('pantalla-resultado').style.display = 'none'; 
+            document.getElementById('pantalla-ingreso').style.display = 'block'; 
+        }
+    }
+
+    function toggleNotif() {
+        const p = document.getElementById('notif-panel');
+        p.style.display = p.style.display === 'block' ? 'none' : 'block';
+        if(p.style.display === 'block' && misNotificaciones.some(n => n.Estado === 'No')) {
+            marcarNotifLeidas();
+        }
+    }
+
+    async function cargarDatosAsesor() {
+      try {
+        const [resU, resMat, resEx, resRes, resNotif] = await Promise.all([
+          fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'leer', tabla: 'Usuarios' }) }),
+          fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'leer', tabla: 'Materiales' }) }),
+          fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'leer', tabla: 'Examenes' }) }),
+          fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'leer', tabla: 'Resultados' }) }),
+          fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'leer', tabla: 'Notificaciones' }) })
+        ]);
+        
+        const dU = await resU.json(); 
+        const dataMat = await resMat.json(); 
+        const dataEx = await resEx.json(); 
+        const dataRes = await resRes.json(); 
+        const dataN = await resNotif.json();
+
+        document.getElementById('loading').style.display = 'none';
+
+        if (dU.success) {
+            perfilBD = dU.data.find(u => u.DNI == dataAsesor.usuario);
+            if (perfilBD) {
+                document.getElementById('nombre-asesor').innerText = perfilBD.Nombres.split(' ')[0];
+                let xp = parseInt(perfilBD.XP) || 0;
+                document.getElementById('xp-asesor').innerText = xp + " XP";
+                
+                let rango = xp > 150 ? "🎖️ EXPERTO" : (xp > 50 ? "🏅 AVANZADO" : "🔰 NOVATO");
+                document.getElementById('rango-asesor').innerText = rango;
+            }
+        }
+
+        if (dataMat.success) {
+            renderizarMateriales(dataMat.data.filter(m => m.Estado === 'Activo'));
+        }
+        
+        if (dataN.success) {
+            misNotificaciones = dataN.data.filter(n => n.DNI == dataAsesor.usuario).reverse();
+            let noLeidas = misNotificaciones.filter(n => n.Estado === 'No').length;
+            
+            if (noLeidas > 0) { 
+                document.getElementById('notif-count').style.display = 'flex'; 
+                document.getElementById('notif-count').innerText = noLeidas; 
+            }
+            
+            const p = document.getElementById('notif-panel'); 
+            p.innerHTML = '';
+            
+            if (misNotificaciones.length === 0) {
+                p.innerHTML = '<div style="padding:15px; text-align:center; font-size:12px;">Sin notificaciones</div>';
+            }
+            
+            misNotificaciones.forEach(n => {
+                let bg = n.Estado === 'No' ? '#f0f9ff' : '#ffffff';
+                p.innerHTML += `
+                  <div class="notif-item" style="background:${bg};">
+                    <div class="notif-msg">${n.Mensaje}</div>
+                    <div class="notif-date">${n.Fecha}</div>
+                  </div>`;
+            });
+        }
+
+        if (dataEx.success && dataRes.success) {
+            examenesList = dataEx.data;
+            misResultadosGlobal = dataRes.data.filter(r => r.DNI.toString() === dataAsesor.usuario.toString());
+            renderizarHistorial(misResultadosGlobal);
+        }
+        
+        switchTab('Material');
+        
+      } catch (error) { 
+          document.getElementById('loading').innerHTML = 'Error de red al cargar el sistema.'; 
+      }
+    }
+
+    function renderizarMateriales(materiales) {
+        const grid = document.getElementById('grid-materiales'); 
+        grid.innerHTML = '';
+        
+        if (materiales.length === 0) {
+            return grid.innerHTML = '<p style="text-align:center; color:gray; width:100%;">No hay materiales en este momento.</p>';
+        }
+        
+        const svgDoc = `<svg class="preview-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4 14h-6v-2h6v2zm2-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`;
+
+        materiales.forEach(mat => {
+            const isYouTube = mat.URL && (mat.URL.includes('youtube.com') || mat.URL.includes('youtu.be'));
+            let previewHTML = '';
+            
+            if (isYouTube) {
+                let vid = mat.URL.includes('v=') ? mat.URL.split('v=')[1].split('&')[0] : mat.URL.split('youtu.be/')[1].split('?')[0];
+                previewHTML = `<img src="https://img.youtube.com/vi/${vid}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${vid}/hqdefault.jpg'"><div class="play-icon">▶</div>`;
+            } else {
+                previewHTML = `<div class="tech-pattern"></div><div class="tech-glow"></div>${svgDoc}`;
+            }
+            
+            const urlSegura = mat.URL ? mat.URL.replace(/'/g, "\\'") : '';
+            
+            grid.innerHTML += `
+              <div class="card">
+                <div class="card-preview">${previewHTML}</div>
+                <div class="card-body">
+                  <h3 class="card-title">${mat.Titulo}</h3>
+                  <p class="card-desc">${mat.Descripcion||''}</p>
+                </div>
+                <div class="card-footer">
+                  <button class="btn-ver" onclick="abrirReproductor('${urlSegura}', '${mat.Titulo.replace(/'/g, "\\'")}')">▶ VER MATERIAL</button>
+                </div>
+              </div>`;
+        });
+    }
+
+    function abrirReproductor(url, titulo) {
+        if (!url) return alert("Sin enlace válido.");
+        
+        let embed = url;
+        if (url.includes('youtube.com')) {
+            embed = `https://www.youtube.com/embed/${url.split('v=')[1].split('&')[0]}`;
+        } else if (url.includes('youtu.be')) {
+            embed = `https://www.youtube.com/embed/${url.split('youtu.be/')[1].split('?')[0]}`;
+        } else if (url.includes('/view')) {
+            embed = url.replace('/view', '/preview');
+        }
+
+        document.getElementById('modal-caja').className = 'modal-box dark-mode';
+        document.getElementById('modal-title').innerText = titulo;
+        
+        document.getElementById('modal-content').innerHTML = `
+          <iframe src="${embed}" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
+        `;
+        
+        document.getElementById('modal-general').style.display = 'flex';
+    }
+
+    async function marcarNotifLeidas() {
+        document.getElementById('notif-count').style.display = 'none';
+        let updates = misNotificaciones.filter(n => n.Estado === 'No');
+        
+        updates.forEach(n => n.Estado = 'Si');
+        
+        if (updates.length > 0) {
+            await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'guardar_lote', tabla: 'Notificaciones', datos: updates }) });
+        }
+    }
+
+    function renderizarHistorial(resultados) {
+        const tbody = document.getElementById('body-historial-asesor'); 
+        tbody.innerHTML = '';
+        
+        if (resultados.length === 0) {
+            return tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">Aún no has rendido ninguna evaluación.</td></tr>';
+        }
+        
+        resultados.slice().reverse().forEach(r => {
+            const exInfo = examenesList.find(e => e.ID === r.ID_Examen);
+            const tituloExamen = exInfo ? exInfo.Titulo : 'Examen Desconocido';
+            const puedeVer = (exInfo && exInfo.VerDetalle === 'Si');
+            const jsonSeguro = r.Detalle ? r.Detalle.replace(/'/g, "&#39;").replace(/"/g, "&quot;") : '[]';
+            const feedSeguro = r.Feedback ? r.Feedback.replace(/'/g, "&#39;").replace(/"/g, "&quot;") : '';
+
+            const botonAccion = puedeVer 
+                ? `<button class="btn-action" onclick="verDetalle('${jsonSeguro}', '${feedSeguro}')">Ver Detalle ${r.Feedback ? 'y Feedback⭐' : ''}</button>` 
+                : `<span style="font-size:11px; color:var(--text-light);">🔒 Oculto</span>`;
+
+            tbody.innerHTML += `
+              <tr>
+                <td style="font-weight:700;">${tituloExamen}</td>
+                <td><span style="background:#dcfce7; color:#15803d; padding:5px 12px; border-radius:999px; font-size:12px; font-weight:800;">${r.Nota} Pts</span></td>
+                <td>${r.Fecha}</td>
+                <td>${botonAccion}</td>
+              </tr>`;
+        });
+    }
+
+    function verDetalle(jsonStr, feedback) {
+        document.getElementById('modal-caja').className = 'modal-box';
+        document.getElementById('modal-title').innerText = 'Corrección del Examen';
+        
+        const content = document.getElementById('modal-content'); 
+        content.innerHTML = '';
+        
+        if (feedback && feedback !== '') { 
+            content.innerHTML += `<div class="feedback-alert"><strong>Feedback de tu Supervisor:</strong><br>${feedback}</div>`; 
+        }
+        
+        try {
+            const detalle = JSON.parse(jsonStr.replace(/&quot;/g, '"').replace(/&#39;/g, "'"));
+            detalle.forEach((d, i) => {
+                const ok = d.resp === d.corr; 
+                const c = ok ? 'color:#15803d;' : 'color:#be123c;';
+                
+                content.innerHTML += `
+                  <div class="eval-row">
+                    <div style="font-weight:700; font-size:14px; margin-bottom:6px;">${i+1}. ${d.preg}</div>
+                    <div style="font-size:13px; ${c}">Respondiste: <b>${d.resp}</b> (Correcta: ${d.corr}) | <b>+${d.pts} Puntos</b></div>
+                  </div>`;
+            });
+        } catch(e) {
+            console.error(e);
+        }
+        
+        document.getElementById('modal-general').style.display = 'flex';
+    }
+
+    function cerrarModal() { 
+        document.getElementById('modal-content').innerHTML = '';
+        document.getElementById('modal-general').style.display = 'none'; 
+    }
+
+    async function iniciarExamen() {
+        const cod = document.getElementById('codigo-examen').value.trim();
+        const msg = document.getElementById('msg-examen');
+        if (!cod) return msg.innerText = "Ingresa un código.";
+        
+        msg.innerText = "Buscando...";
+        
+        try {
+            examenActual = examenesList.find(e => e.Codigo === cod);
+            
+            if (!examenActual || examenActual.Estado !== 'Activo') {
+                return msg.innerText = "Código no válido o examen inactivo.";
+            }
+            if (misResultadosGlobal.some(r => r.ID_Examen === examenActual.ID)) {
+                return msg.innerText = "Ya has rendido este examen.";
+            }
+
+            msg.innerText = "Cargando preguntas...";
+            
+            const resP = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'leer', tabla: 'Preguntas' }) });
+            const dataP = await resP.json();
+            preguntasExamen = dataP.data.filter(p => p.ID_Examen === examenActual.ID);
+            
+            document.getElementById('titulo-examen').innerText = examenActual.Titulo;
+            const caja = document.getElementById('caja-preguntas'); 
+            caja.innerHTML = '';
+            
+            preguntasExamen.forEach((p, i) => {
+                caja.innerHTML += `
+                  <div style="margin-bottom:20px; padding:18px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px;">
+                    <div style="font-weight:700; margin-bottom:10px;">${i+1}. ${p.Pregunta}</div>
+                    <label style="display:block; margin-bottom:6px; cursor:pointer;"><input type="radio" name="q_${p.ID}" value="A"> A) ${p.OpcionA}</label>
+                    <label style="display:block; margin-bottom:6px; cursor:pointer;"><input type="radio" name="q_${p.ID}" value="B"> B) ${p.OpcionB}</label>
+                    <label style="display:block; margin-bottom:6px; cursor:pointer;"><input type="radio" name="q_${p.ID}" value="C"> C) ${p.OpcionC}</label>
+                    <label style="display:block; margin-bottom:6px; cursor:pointer;"><input type="radio" name="q_${p.ID}" value="D"> D) ${p.OpcionD}</label>
+                  </div>`;
+            });
+            
+            document.getElementById('pantalla-ingreso').style.display = 'none';
+            document.getElementById('pantalla-cuestionario').style.display = 'block';
+            
+        } catch (e) { 
+            msg.innerText = "Error al conectar con la base de datos."; 
+        }
+    }
+
+    async function enviarExamen() {
+        if (!confirm("¿Estás seguro de enviar tus respuestas?")) return;
+        
+        let notaTotal = 0; 
+        let detalleResp = [];
+        
+        preguntasExamen.forEach(p => {
+            const sel = document.querySelector(`input[name="q_${p.ID}"]:checked`);
+            const val = sel ? sel.value : '-';
+            let pts = val === p.Correcta ? (parseInt(p.Puntaje) || 0) : 0;
+            
+            notaTotal += pts;
+            detalleResp.push({ preg: p.Pregunta, resp: val, corr: p.Correcta, pts: pts });
+        });
+
+        perfilBD.XP = (parseInt(perfilBD.XP) || 0) + notaTotal;
+
+        const dataGuardar = {
+            ID: new Date().getTime().toString(), 
+            ID_Examen: examenActual.ID, 
+            DNI: dataAsesor.usuario, 
+            Nombres: perfilBD.Nombres,
+            Nota: notaTotal, 
+            Detalle: JSON.stringify(detalleResp), 
+            Fecha: new Date().toLocaleTimeString('es-PE'), 
+            Feedback: ''
+        };
+
+        document.getElementById('pantalla-cuestionario').innerHTML = `<h2 style="text-align:center; margin:50px;">Enviando...⏳</h2>`;
+        
+        await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'guardar', tabla: 'Resultados', datos: dataGuardar }) });
+        await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'guardar', tabla: 'Usuarios', datos: perfilBD }) });
+        
+        cargarDatosAsesor();
+        
+        document.getElementById('pantalla-cuestionario').style.display = 'none';
+        document.getElementById('nota-final').innerText = notaTotal + " XP GANADOS";
+        document.getElementById('pantalla-resultado').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

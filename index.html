@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Martec - Acceso</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Outfit', sans-serif;
+      background-color: #ffffff;
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(6, 182, 212, 0.14) 0%, transparent 40%),
+        radial-gradient(circle at 88% 82%, rgba(99, 102, 241, 0.16) 0%, transparent 42%),
+        radial-gradient(circle at 80% 15%, rgba(236, 72, 153, 0.10) 0%, transparent 32%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #0f172a;
+    }
+
+    .container {
+      display: flex;
+      width: 900px;
+      max-width: 94vw;
+      min-height: 520px;
+      background: #ffffff;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow:
+        0 25px 60px -15px rgba(37, 99, 235, 0.18),
+        0 10px 25px -5px rgba(15, 23, 42, 0.06),
+        inset 0 2px 0 rgba(255, 255, 255, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .left-panel {
+      flex: 1;
+      background: linear-gradient(145deg, #ffffff 0%, #f0f9ff 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      position: relative;
+      border-right: 1px solid rgba(6, 182, 212, 0.15);
+    }
+
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      background: linear-gradient(135deg, #06b6d4, #6366f1);
+      filter: blur(80px);
+      opacity: 0.18;
+      border-radius: 50%;
+    }
+
+    .logo-container {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .logo-arrows {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 78px;
+      height: 78px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 55%, #8b5cf6 100%);
+      color: #ffffff;
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 18px;
+      box-shadow:
+        0 14px 30px -6px rgba(59, 130, 246, 0.45),
+        inset 0 2px 4px rgba(255, 255, 255, 0.45),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .logo-text {
+      font-size: 50px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 55%, #06b6d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0;
+      line-height: 1;
+    }
+
+    .logo-sub {
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+    }
+
+    .right-panel {
+      flex: 1.05;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 45px;
+      box-sizing: border-box;
+    }
+
+    .form-box {
+      width: 100%;
+      max-width: 310px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .form-box h3 {
+      color: #0f172a;
+      font-size: 22px;
+      font-weight: 800;
+      margin: 0 0 22px 0;
+      letter-spacing: -0.5px;
+    }
+
+    .form-group {
+      width: 100%;
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+      box-sizing: border-box;
+      outline: none;
+      box-shadow: inset 0 2px 5px rgba(15, 23, 42, 0.04);
+      transition: all 0.25s ease;
+    }
+
+    .form-group select {
+      cursor: pointer;
+    }
+
+    .form-group input::placeholder {
+      color: #94a3b8;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      background-color: #ffffff;
+      border-color: #3b82f6;
+      box-shadow:
+        0 0 0 4px rgba(59, 130, 246, 0.14),
+        0 4px 12px rgba(6, 182, 212, 0.12);
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 5px;
+      margin-left: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 55%, #6366f1 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      margin-top: 8px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      box-shadow:
+        0 10px 22px -6px rgba(59, 130, 246, 0.55),
+        inset 0 2px 2px rgba(255, 255, 255, 0.35),
+        inset 0 -3px 0 rgba(0, 0, 0, 0.15);
+      transition: all 0.25s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 14px 28px -6px rgba(99, 102, 241, 0.6),
+        inset 0 2px 2px rgba(255, 255, 255, 0.45);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .link-toggle {
+      margin-top: 18px;
+      font-size: 13px;
+      color: #2563eb;
+      cursor: pointer;
+      font-weight: 700;
+      transition: color 0.2s;
+    }
+
+    .link-toggle:hover {
+      color: #7c3aed;
+      text-decoration: underline;
+    }
+
+    #log-message, #reg-message {
+      margin-top: 12px;
+      font-size: 13px;
+      text-align: center;
+      font-weight: 700;
+      min-height: 18px;
+    }
+
+    .watermark {
+      position: fixed;
+      bottom: 12px;
+      right: 18px;
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 700;
+      z-index: 9999;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="watermark">Desarrollado por Jonatan Santiago Guerrero</div>
+
+  <div class="container">
+    <div class="left-panel">
+      <div class="logo-container">
+        <div class="logo-arrows">&lt; &gt;</div>
+        <h1 class="logo-text">martec</h1>
+        <div class="logo-sub">Estrategia & Soluciones</div>
+      </div>
+    </div>
+    
+    <div class="right-panel">
+      
+      <!-- FORMULARIO DE LOGIN -->
+      <div class="form-box" id="login-box">
+        <h3>INICIAR SESIÓN</h3>
+        <div class="form-group">
+          <input type="text" id="log-usuario" placeholder="Ingresa tu DNI">
+          <label>Usuario</label>
+        </div>
+        <div class="form-group">
+          <input type="password" id="log-contrasena" placeholder="Ingresa tu contraseña">
+          <label>Contraseña</label>
+        </div>
+        <button id="btnLogin" onclick="login()">Ingresar</button>
+        <div class="link-toggle" onclick="toggleForm('register')">¿Eres nuevo Asesor? Regístrate aquí</div>
+        <div id="log-message"></div>
+      </div>
+
+      <!-- FORMULARIO DE REGISTRO (ASESORES) -->
+      <div class="form-box" id="register-box" style="display: none;">
+        <h3>REGISTRO DE ASESOR</h3>
+        <div class="form-group">
+          <input type="text" id="reg-dni" placeholder="DNI Obligatorio">
+        </div>
+        <div class="form-group">
+          <input type="text" id="reg-nombres" placeholder="Nombres y Apellidos">
+        </div>
+        <div class="form-group">
+          <input type="text" id="reg-celular" placeholder="Número de Celular">
+        </div>
+        <div class="form-group">
+          <select id="reg-supervisor">
+            <option value="">-- Selecciona tu Supervisor --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <input type="password" id="reg-pass" placeholder="Crear Contraseña">
+        </div>
+        <button id="btnRegister" onclick="registrar()">Registrarse</button>
+        <div class="link-toggle" onclick="toggleForm('login')">Volver al inicio de sesión</div>
+        <div id="reg-message"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyb5U31hqfuy9v36Q-gMTchEp7NK8MVIf66V_2UxLbyBo6gOk02Gh0Icy-5qOyItWMz/exec';
+
+    window.onload = () => { 
+        localStorage.removeItem('martec_user'); 
+    };
+
+    function toggleForm(form) {
+        document.getElementById('login-box').style.display = form === 'login' ? 'flex' : 'none';
+        document.getElementById('register-box').style.display = form === 'register' ? 'flex' : 'none';
+        document.getElementById('log-message').innerText = '';
+        document.getElementById('reg-message').innerText = '';
+        
+        if (form === 'register') { 
+            cargarSupervisoresBD(); 
+        }
+    }
+
+    async function cargarSupervisoresBD() {
+        const selectSup = document.getElementById('reg-supervisor');
+        selectSup.innerHTML = '<option value="">Buscando supervisores...</option>';
+        
+        try {
+            const res = await fetch(API_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ action: 'leer', tabla: 'Usuarios' }) 
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                const supervisores = data.data.filter(u => u.Rol === 'Supervisor' && u.Estado === 'Activo');
+                selectSup.innerHTML = '<option value="">-- Selecciona tu Supervisor --</option>';
+                
+                supervisores.forEach(sup => {
+                    const nombreSup = sup['Nombres'];
+                    if (nombreSup) { 
+                        selectSup.innerHTML += `<option value="${nombreSup}">${nombreSup}</option>`; 
+                    }
+                });
+            } else { 
+                selectSup.innerHTML = '<option value="">-- Sin Supervisores --</option>'; 
+            }
+        } catch (error) { 
+            selectSup.innerHTML = '<option value="">Error al cargar. Intenta de nuevo.</option>'; 
+        }
+    }
+
+    async function login() {
+      const user = document.getElementById('log-usuario').value.trim();
+      const pass = document.getElementById('log-contrasena').value.trim();
+      const msgDiv = document.getElementById('log-message');
+      const btn = document.getElementById('btnLogin');
+
+      if (!user || !pass) { 
+          msgDiv.innerText = 'Completa ambos campos.'; 
+          msgDiv.style.color = '#e11d48'; 
+          return; 
+      }
+      
+      msgDiv.innerText = 'Validando credenciales...'; 
+      msgDiv.style.color = '#2563eb'; 
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(API_URL, { 
+            method: 'POST', 
+            body: JSON.stringify({ action: 'login', usuario: user, contrasena: pass }) 
+        });
+        const data = await res.json();
+        btn.disabled = false;
+        
+        if (data.success) {
+          msgDiv.innerText = data.message; 
+          msgDiv.style.color = '#059669';
+          
+          localStorage.setItem('martec_user', JSON.stringify({ usuario: user, rol: data.rol }));
+
+          const rolLimpio = data.rol ? data.rol.toString().trim().toLowerCase() : '';
+          
+          setTimeout(() => { 
+              if (rolLimpio.includes('asesor')) {
+                  window.location.href = "asesor.html";
+              } else if (rolLimpio.includes('supervisor')) {
+                  window.location.href = "supervisor.html";
+              } else if (rolLimpio.includes('admin')) {
+                  window.location.href = "admin.html";
+              } else {
+                  alert("ERROR CRÍTICO: Rol no reconocido (" + data.rol + "). Contacta al administrador para que verifique tu cargo en la base de datos.");
+                  window.location.href = "index.html";
+              }
+          }, 1000);
+        } else { 
+            msgDiv.innerText = data.message; 
+            msgDiv.style.color = '#e11d48'; 
+        }
+      } catch (error) { 
+          btn.disabled = false; 
+          msgDiv.innerText = 'Error de servidor.'; 
+          msgDiv.style.color = '#e11d48'; 
+      }
+    }
+
+    async function registrar() {
+      const dni = document.getElementById('reg-dni').value.trim();
+      const nombres = document.getElementById('reg-nombres').value.trim();
+      const celular = document.getElementById('reg-celular').value.trim();
+      const supervisor = document.getElementById('reg-supervisor').value;
+      const pass = document.getElementById('reg-pass').value.trim();
+      const msgDiv = document.getElementById('reg-message');
+      const btn = document.getElementById('btnRegister');
+
+      if (!dni || !nombres || !celular || !pass) { 
+          msgDiv.innerText = 'Llena todos los campos obligatorios.'; 
+          msgDiv.style.color = '#e11d48'; 
+          return; 
+      }
+      
+      if (!supervisor) { 
+          msgDiv.innerText = 'Debes seleccionar un supervisor válido.'; 
+          msgDiv.style.color = '#e11d48'; 
+          return; 
+      }
+
+      msgDiv.innerText = 'Registrando... Por favor espera.'; 
+      msgDiv.style.color = '#2563eb'; 
+      btn.disabled = true;
+
+      const datosUsuario = { 
+          DNI: dni, 
+          Nombres: nombres, 
+          Telefono: celular, 
+          Contraseña: pass, 
+          Rol: 'Asesor', 
+          Estado: 'Activo', 
+          Supervisor: supervisor, 
+          XP: 0 
+      };
+      
+      try {
+        await fetch(API_URL, { 
+            method: 'POST', 
+            body: JSON.stringify({ action: 'guardar', tabla: 'Usuarios', datos: datosUsuario }) 
+        });
+        
+        msgDiv.innerText = '¡Registro exitoso! Redirigiendo...'; 
+        msgDiv.style.color = '#059669';
+        
+        setTimeout(() => {
+            toggleForm('login');
+            document.getElementById('log-usuario').value = dni;
+            document.getElementById('log-contrasena').value = pass;
+            btn.disabled = false;
+        }, 1500);
+
+      } catch (error) { 
+          btn.disabled = false; 
+          msgDiv.innerText = 'Error al registrar.'; 
+          msgDiv.style.color = '#e11d48'; 
+      }
+    }
+  </script>
+</body>
+</html>
