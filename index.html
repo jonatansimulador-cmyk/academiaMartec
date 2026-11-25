@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesión - Martec</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #3b82f6;
+      --primary-grad: linear-gradient(135deg, #06b6d4 0%, #3b82f6 55%, #6366f1 100%);
+      --text-main: #0f172a;
+      --text-light: #64748b;
+      --shadow-relief: 0 20px 50px -12px rgba(59, 130, 246, 0.22), 0 8px 20px -4px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1);
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: 'Outfit', sans-serif;
+      background-color: #ffffff;
+      background-image:
+        radial-gradient(circle at 18% 15%, rgba(6, 182, 212, 0.14) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(99, 102, 241, 0.15) 0%, transparent 42%);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .login-card {
+      width: 92%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(14px);
+      border: 1px solid #e2e8f0;
+      border-radius: 26px;
+      padding: 38px 36px;
+      box-shadow: var(--shadow-relief);
+      text-align: center;
+      max-height: 94vh;
+      overflow-y: auto;
+    }
+
+    .brand-logo-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: -1.2px;
+      color: #000000;
+    }
+
+    .brand-sub {
+      display: block;
+      margin-top: 4px;
+      margin-bottom: 26px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #06b6d4;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 16px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 800;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 13px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+      color: #0f172a;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .input-mayus {
+      text-transform: uppercase;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      background: #ffffff;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+    }
+
+    .btn-login {
+      width: 100%;
+      margin-top: 8px;
+      padding: 15px;
+      border: none;
+      border-radius: 14px;
+      background: var(--primary-grad);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: 0.8px;
+      cursor: pointer;
+      box-shadow: 0 12px 24px -6px rgba(59, 130, 246, 0.55), inset 0 2px 2px rgba(255, 255, 255, 0.35);
+      transition: all 0.25s ease;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 30px -6px rgba(99, 102, 241, 0.65);
+    }
+
+    .btn-login:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .toggle-link {
+      margin-top: 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    .toggle-link a {
+      color: #2563eb;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .toggle-link a:hover {
+      text-decoration: underline;
+    }
+
+    .msg-error {
+      margin-top: 14px;
+      min-height: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #e11d48;
+    }
+
+    .msg-success {
+      color: #10b981;
+    }
+
+    .watermark {
+      position: fixed;
+      bottom: 12px;
+      right: 16px;
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+    <div class="brand-logo-wrap">
+      <svg width="52" height="42" viewBox="0 0 120 96" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+        <path d="M40 16L14 48L40 80" stroke="#38D394" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M80 16L106 48L80 80" stroke="#38D394" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="60" y="29" width="27" height="27" transform="rotate(45 60 29)" fill="#000000"/>
+      </svg>
+      <h1 class="brand-title">martec</h1>
+    </div>
+    <span class="brand-sub" id="sub-titulo">Plataforma Integral</span>
+
+    <!-- FORMULARIO DE INICIO DE SESIÓN -->
+    <form id="login-form" onsubmit="iniciarSesion(event)">
+      <div class="form-group">
+        <label for="usuario">Usuario / DNI</label>
+        <input type="text" id="usuario" placeholder="Ingresa tu DNI o usuario" autocomplete="username" required>
+      </div>
+
+      <div class="form-group">
+        <label for="clave">Contraseña</label>
+        <input type="password" id="clave" placeholder="Ingresa tu contraseña" autocomplete="current-password" required>
+      </div>
+
+      <button type="submit" class="btn-login" id="btn-ingresar">INGRESAR</button>
+      <div class="msg-error" id="msg-error"></div>
+
+      <div class="toggle-link">
+        ¿Eres asesor nuevo? <a onclick="mostrarRegistro()">Regístrate aquí</a>
+      </div>
+    </form>
+
+    <!-- FORMULARIO DE REGISTRO PARA NUEVOS ASESORES -->
+    <form id="register-form" style="display: none;" onsubmit="registrarAsesor(event)">
+      <div class="form-group">
+        <label for="reg-dni">DNI</label>
+        <input type="text" id="reg-dni" placeholder="Ingresa tu DNI" required>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-nombres">Nombres</label>
+        <input type="text" id="reg-nombres" class="input-mayus" placeholder="Ej. JUAN CARLOS" oninput="this.value = this.value.toUpperCase()" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="reg-ape-paterno">Apellido Paterno</label>
+          <input type="text" id="reg-ape-paterno" class="input-mayus" placeholder="Ej. PÉREZ" oninput="this.value = this.value.toUpperCase()" required>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-ape-materno">Apellido Materno</label>
+          <input type="text" id="reg-ape-materno" class="input-mayus" placeholder="Ej. LÓPEZ" oninput="this.value = this.value.toUpperCase()" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-telefono">Teléfono / Celular</label>
+        <input type="text" id="reg-telefono" placeholder="Ej. 999888777" required>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-supervisor">Supervisor / Líder</label>
+        <select id="reg-supervisor">
+          <option value="">Cargando lista...</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-clave">Contraseña</label>
+        <input type="password" id="reg-clave" placeholder="Crea una contraseña" required>
+      </div>
+
+      <button type="submit" class="btn-login" id="btn-registrar">REGISTRARME</button>
+      <div class="msg-error" id="msg-reg"></div>
+
+      <div class="toggle-link">
+        ¿Ya tienes cuenta? <a onclick="mostrarLogin()">Inicia sesión</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="watermark">Desarrollado por Jonatan Santiago Guerrero</div>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxH3ZO17EGbPMU8EG6tv8pijwRz8o8py9DmyzkOG9Nrx6DPaZn2J-Nv3M0MU7m1GJXd/exec';
+    let listaCargada = false;
+
+    window.onload = () => {
+      localStorage.removeItem('martec_user');
+    };
+
+    function mostrarRegistro() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('register-form').style.display = 'block';
+      document.getElementById('sub-titulo').innerText = 'Registro de Asesor';
+      document.getElementById('msg-error').innerText = '';
+      document.getElementById('msg-reg').innerText = '';
+      document.getElementById('msg-reg').className = 'msg-error';
+
+      if (!listaCargada) {
+        cargarSupervisoresYLideres();
+      }
+    }
+
+    function mostrarLogin() {
+      document.getElementById('register-form').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
+      document.getElementById('sub-titulo').innerText = 'Plataforma Integral';
+      document.getElementById('msg-reg').innerText = '';
+    }
+
+    async function cargarSupervisoresYLideres() {
+      const sel = document.getElementById('reg-supervisor');
+      sel.innerHTML = '<option value="">Cargando supervisores y líderes...</option>';
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'leer', tabla: 'Usuarios' })
+        });
+        const data = await res.json();
+
+        if (!data.success || !Array.isArray(data.data)) {
+          sel.innerHTML = '<option value="">En capacitación (Sin asignar)</option>';
+          return;
+        }
+
+        const activos = data.data.filter(u => (u.Estado || 'Activo').toString().trim().toLowerCase() === 'activo');
+        const supervisores = activos
+          .filter(u => (u.Rol || '').toString().trim().toLowerCase() === 'supervisor')
+          .map(u => (u.Nombres || '').toString().trim())
+          .filter(Boolean);
+
+        const lideres = activos
+          .filter(u => {
+            const r = (u.Rol || '').toString().trim().toLowerCase();
+            return r === 'lider' || r === 'líder';
+          })
+          .map(u => (u.Nombres || '').toString().trim())
+          .filter(Boolean);
+
+        let html = '<option value="">En capacitación (Sin asignar)</option>';
+
+        if (supervisores.length > 0) {
+          html += '<optgroup label="Supervisores">';
+          [...new Set(supervisores)].sort().forEach(s => {
+            html += `<option value="${s}">${s}</option>`;
+          });
+          html += '</optgroup>';
+        }
+
+        if (lideres.length > 0) {
+          html += '<optgroup label="Líderes">';
+          [...new Set(lideres)].sort().forEach(l => {
+            html += `<option value="${l}">${l}</option>`;
+          });
+          html += '</optgroup>';
+        }
+
+        sel.innerHTML = html;
+        listaCargada = true;
+      } catch (e) {
+        sel.innerHTML = '<option value="">En capacitación (Sin asignar)</option>';
+      }
+    }
+
+    async function iniciarSesion(e) {
+      e.preventDefault();
+      const usuarioInput = document.getElementById('usuario').value.trim();
+      const claveInput = document.getElementById('clave').value.trim();
+      const msg = document.getElementById('msg-error');
+      const btn = document.getElementById('btn-ingresar');
+
+      if (!usuarioInput || !claveInput) {
+        msg.innerText = 'Completa todos los campos.';
+        return;
+      }
+
+      msg.innerText = '';
+      msg.className = 'msg-error';
+      btn.disabled = true;
+      btn.innerText = 'VERIFICANDO...';
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'login',
+            usuario: usuarioInput,
+            contrasena: claveInput
+          })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          msg.innerText = data.message || 'Usuario o contraseña incorrectos.';
+          btn.disabled = false;
+          btn.innerText = 'INGRESAR';
+          return;
+        }
+
+        const rol = (data.rol || 'Asesor').toString().trim();
+        localStorage.setItem('martec_user', JSON.stringify({
+          usuario: usuarioInput,
+          rol: rol
+        }));
+
+        const rolLower = rol.toLowerCase();
+        if (rolLower === 'admin' || rolLower === 'administrador') {
+          window.location.href = 'admin.html';
+        } else if (rolLower === 'lider' || rolLower === 'líder') {
+          window.location.href = 'lider.html';
+        } else if (rolLower === 'supervisor') {
+          window.location.href = 'supervisor.html';
+        } else {
+          window.location.href = 'asesor.html';
+        }
+      } catch (err) {
+        msg.innerText = 'Error de conexión con el servidor.';
+        btn.disabled = false;
+        btn.innerText = 'INGRESAR';
+      }
+    }
+
+    async function registrarAsesor(e) {
+      e.preventDefault();
+      const dni = document.getElementById('reg-dni').value.trim();
+      const soloNombres = document.getElementById('reg-nombres').value.replace(/\s+/g, ' ').trim().toUpperCase();
+      const apePaterno = document.getElementById('reg-ape-paterno').value.replace(/\s+/g, ' ').trim().toUpperCase();
+      const apeMaterno = document.getElementById('reg-ape-materno').value.replace(/\s+/g, ' ').trim().toUpperCase();
+      const telefono = document.getElementById('reg-telefono').value.trim();
+      const supervisor = document.getElementById('reg-supervisor').value.trim();
+      const clave = document.getElementById('reg-clave').value.trim();
+      const msg = document.getElementById('msg-reg');
+      const btn = document.getElementById('btn-registrar');
+
+      if (!dni || !soloNombres || !apePaterno || !apeMaterno || !telefono || !clave) {
+        msg.className = 'msg-error';
+        msg.innerText = 'Debes completar tus nombres, tus dos apellidos y todos los campos obligatorios.';
+        return;
+      }
+
+      const nombresCompletos = `${soloNombres} ${apePaterno} ${apeMaterno}`;
+
+      msg.innerText = '';
+      btn.disabled = true;
+      btn.innerText = 'VERIFICANDO DNI...';
+
+      try {
+        // 1. Verificar si el DNI ya está registrado
+        const resCheck = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'leer', tabla: 'Usuarios' })
+        });
+        const dataCheck = await resCheck.json();
+
+        if (dataCheck.success && Array.isArray(dataCheck.data)) {
+          const yaExiste = dataCheck.data.some(u =>
+            (u.DNI || '').toString().trim().toLowerCase() === dni.toLowerCase()
+          );
+
+          if (yaExiste) {
+            msg.className = 'msg-error';
+            msg.innerText = '⚠️ Este DNI ya se encuentra registrado. Por favor, inicia sesión.';
+            btn.disabled = false;
+            btn.innerText = 'REGISTRARME';
+            return;
+          }
+        }
+
+        // 2. Guardar nuevo usuario
+        btn.innerText = 'REGISTRANDO...';
+
+        const hoy = new Date();
+        const fechaHoy = `${String(hoy.getDate()).padStart(2, '0')}/${String(hoy.getMonth() + 1).padStart(2, '0')}/${hoy.getFullYear()}`;
+
+        const nuevoUsuario = {
+          DNI: dni,
+          Nombres: nombresCompletos,
+          Telefono: telefono,
+          Contraseña: clave,
+          Supervisor: supervisor,
+          Rol: 'Asesor',
+          Estado: 'Activo',
+          XP: '0',
+          'Fecha Ingreso': fechaHoy,
+          'Fecha Asignacion': supervisor ? fechaHoy : ''
+        };
+
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'guardar',
+            tabla: 'Usuarios',
+            datos: nuevoUsuario
+          })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          throw new Error(data.message || 'No se pudo completar el registro.');
+        }
+
+        document.getElementById('register-form').reset();
+        mostrarLogin();
+        document.getElementById('usuario').value = dni;
+        const msgLogin = document.getElementById('msg-error');
+        msgLogin.className = 'msg-error msg-success';
+        msgLogin.innerText = '✅ Registro exitoso. Ahora puedes iniciar sesión.';
+      } catch (err) {
+        msg.className = 'msg-error';
+        msg.innerText = err.message || 'Error de conexión al registrar.';
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'REGISTRARME';
+      }
+    }
+  </script>
+</body>
+</html>
