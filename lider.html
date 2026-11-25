@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Líder - Martec</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
+    
+    * {
+      box-sizing: border-box;
+    }
+
+    :root { 
+      --primary: #3b82f6;
+      --primary-grad: linear-gradient(135deg, #06b6d4 0%, #3b82f6 55%, #6366f1 100%);
+      --accent-grad: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+      --text-main: #0f172a; 
+      --text-light: #64748b; 
+      --border-color: #e2e8f0; 
+      --shadow-relief: 0 12px 30px -8px rgba(59, 130, 246, 0.14), 0 4px 12px -2px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1);
+      --radius-md: 12px; 
+      --radius-lg: 20px; 
+    }
+    
+    body, html { 
+      margin: 0; 
+      padding: 0; 
+      width: 100%;
+      height: 100%; 
+      font-family: 'Outfit', sans-serif; 
+      background-color: #ffffff;
+      background-image:
+        radial-gradient(circle at 18% 10%, rgba(6, 182, 212, 0.09) 0%, transparent 38%),
+        radial-gradient(circle at 92% 88%, rgba(99, 102, 241, 0.11) 0%, transparent 40%);
+      color: var(--text-main); 
+      display: flex; 
+      overflow: hidden; 
+    }
+    
+    .sidebar { 
+      width: 265px; 
+      flex-shrink: 0;
+      background: #ffffff; 
+      color: var(--text-main); 
+      display: flex; 
+      flex-direction: column; 
+      border-right: 1px solid #e2e8f0;
+      box-shadow: 6px 0 30px rgba(37, 99, 235, 0.07);
+      z-index: 10; 
+    }
+    
+    .sidebar-brand { 
+      padding: 24px; 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      border-bottom: 1px solid #f1f5f9; 
+    }
+    
+    .brand-text h2 { 
+      margin: 0; 
+      font-size: 26px; 
+      font-weight: 900; 
+      letter-spacing: -0.8px;
+      color: #000000;
+      line-height: 1.05;
+    }
+
+    .brand-text span {
+      font-size: 11px;
+      color: #06b6d4;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+    }
+    
+    .menu { 
+      list-style: none; 
+      padding: 18px 14px; 
+      margin: 0; 
+      flex: 1; 
+    }
+    
+    .menu li { 
+      padding: 13px 16px; 
+      margin-bottom: 8px; 
+      cursor: pointer; 
+      border-radius: 14px; 
+      color: #475569; 
+      font-weight: 600; 
+      font-size: 14px; 
+      transition: all 0.25s ease; 
+    }
+    
+    .menu li:hover { 
+      background-color: #f0f9ff; 
+      color: #2563eb;
+      transform: translateX(4px);
+    }
+
+    .menu li.active {
+      background: var(--primary-grad);
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 10px 20px -6px rgba(59, 130, 246, 0.55), inset 0 1px 2px rgba(255,255,255,0.35);
+    }
+    
+    .menu-logout { 
+      margin-top: auto; 
+      color: #e11d48 !important; 
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .menu-logout:hover {
+      background-color: #fff1f2 !important;
+      color: #be123c !important;
+    }
+    
+    .main-wrapper { 
+      flex: 1; 
+      min-width: 0;
+      width: 100%;
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden; 
+      background: transparent; 
+    }
+    
+    .topbar { 
+      height: 74px; 
+      width: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #e2e8f0; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 0 32px; 
+    }
+    
+    .topbar-title { 
+      font-size: 20px; 
+      font-weight: 800; 
+      color: #0f172a; 
+    }
+    
+    .topbar-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      background: #ffffff;
+      padding: 6px 8px 6px 16px;
+      border-radius: 999px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--primary-grad);
+      border-radius: 50%;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 800;
+      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+    }
+
+    .main-content { 
+      flex: 1; 
+      width: 100%;
+      padding: 28px 32px; 
+      overflow-y: auto; 
+      display: flex; 
+      flex-direction: column; 
+    }
+    
+    #vista-dashboard {
+      width: 100%;
+    }
+
+    .dashboard-grid { 
+      width: 100%;
+      display: grid; 
+      grid-template-columns: repeat(3, 1fr); 
+      gap: 22px; 
+      margin-bottom: 22px;
+    }
+    
+    .dash-card { 
+      width: 100%;
+      background: #ffffff; 
+      border: 1px solid #e2e8f0; 
+      border-radius: var(--radius-lg); 
+      padding: 24px;
+      box-shadow: var(--shadow-relief);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dash-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--primary-grad);
+    }
+    
+    .dash-value { 
+      font-size: 36px; 
+      font-weight: 900; 
+      background: var(--primary-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 10px 0 0 0; 
+    }
+    
+    .table-container { 
+      width: 100%;
+      background-color: #ffffff; 
+      border-radius: var(--radius-lg); 
+      border: 1px solid #e2e8f0; 
+      padding: 24px; 
+      box-shadow: var(--shadow-relief);
+      display: none; 
+      flex-direction: column;
+      overflow-x: auto;
+    }
+
+    .filter-input {
+      padding: 9px 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 13px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      outline: none;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+
+    .filter-input:focus {
+      background: #ffffff;
+      border-color: #3b82f6;
+    }
+    
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      text-align: left; 
+      margin-top: 15px; 
+    }
+    
+    th { 
+      background-color: #f8fafc; 
+      color: #64748b; 
+      padding: 14px 18px; 
+      font-size: 11px; 
+      text-transform: uppercase; 
+      font-weight: 800; 
+      letter-spacing: 0.8px;
+      border-bottom: 2px solid #e2e8f0; 
+      white-space: nowrap;
+    }
+    
+    td { 
+      padding: 14px 16px; 
+      font-size: 13px; 
+      font-weight: 600; 
+      border-bottom: 1px solid #f1f5f9; 
+    }
+
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    /* MATRIZ DE ASISTENCIA MENSUAL */
+    .asis-matrix-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      margin-top: 16px;
+    }
+
+    .asis-matrix {
+      margin-top: 0;
+      border-collapse: collapse;
+      width: max-content;
+      min-width: 100%;
+    }
+
+    .asis-matrix th, .asis-matrix td {
+      padding: 10px 8px;
+      text-align: center;
+      border-right: 1px solid #f1f5f9;
+    }
+
+    .asis-matrix th.col-sticky,
+    .asis-matrix td.col-sticky {
+      position: sticky;
+      left: 0;
+      background: #ffffff;
+      z-index: 2;
+      text-align: left;
+      padding: 10px 14px;
+      min-width: 240px;
+      border-right: 2px solid #e2e8f0;
+    }
+
+    .asis-matrix th.col-sticky {
+      background: #f8fafc;
+      z-index: 3;
+    }
+
+    .asis-select {
+      width: 68px;
+      padding: 6px 4px;
+      border-radius: 8px;
+      border: 1.5px solid #cbd5e1;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      text-align: center;
+      cursor: pointer;
+      outline: none;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+
+    .asis-A { background: #dcfce7 !important; color: #15803d !important; border-color: #86efac !important; }
+    .asis-T { background: #fef9c3 !important; color: #854d0e !important; border-color: #fde047 !important; }
+    .asis-F { background: #ffe4e6 !important; color: #be123c !important; border-color: #fda4af !important; }
+    .asis-Justificado { background: #e0f2fe !important; color: #0369a1 !important; border-color: #7dd3fc !important; }
+
+    .motivo-tag {
+      display: block;
+      font-size: 10px;
+      color: #0369a1;
+      max-width: 72px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin: 3px auto 0;
+      cursor: help;
+    }
+    
+    .badge-activo { 
+      padding: 5px 12px; 
+      border-radius: 999px; 
+      font-size: 11px; 
+      font-weight: 800; 
+      background: #dcfce7; 
+      color: #15803d; 
+      text-transform: uppercase;
+    }
+
+    .badge-falta {
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      background: #ffe4e6;
+      color: #be123c;
+      text-transform: uppercase;
+    }
+    
+    .btn-action { 
+      padding: 9px 16px; 
+      font-size: 12px; 
+      border-radius: 10px; 
+      border: none; 
+      font-weight: 700; 
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer; 
+      background: var(--primary-grad); 
+      color: #ffffff;
+      box-shadow: 0 6px 14px -4px rgba(59, 130, 246, 0.45);
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-action:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-excel {
+      background: var(--accent-grad);
+      box-shadow: 0 6px 14px -4px rgba(16, 185, 129, 0.45);
+    }
+
+    .btn-dark {
+      background: linear-gradient(135deg, #334155, #0f172a);
+      box-shadow: 0 6px 14px -4px rgba(15, 23, 42, 0.35);
+    }
+    
+    .modal-overlay { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(6px);
+      display: none; 
+      justify-content: center; 
+      align-items: center; 
+      z-index: 1000; 
+    }
+    
+    .modal-box { 
+      width: 90%; 
+      max-width: 820px; 
+      height: 85vh;
+      background: #ffffff; 
+      border-radius: 24px; 
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden; 
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.3);
+      border: 1px solid #e2e8f0;
+    }
+
+    .modal-box.compact {
+      max-width: 560px;
+      height: auto;
+      max-height: 90vh;
+    }
+
+    .modal-box.dark-mode { 
+      background: #0f172a; 
+      max-width: 1100px; 
+      border: 1px solid rgba(255,255,255,0.12); 
+    }
+    
+    .modal-header { 
+      padding: 18px 24px; 
+      background: var(--primary-grad); 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+    
+    .modal-title { 
+      margin: 0; 
+      color: #ffffff; 
+      font-size: 15px; 
+      font-weight: 800; 
+      text-transform: uppercase; 
+    }
+    
+    .modal-content-area { 
+      flex: 1; 
+      overflow-y: auto; 
+      padding: 22px; 
+      background: #f8fafc;
+      height: 100%;
+    }
+
+    .modal-box.dark-mode .modal-content-area { 
+      padding: 0; 
+      background: #000000; 
+      overflow: hidden; 
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      background: #ffffff;
+      outline: none;
+    }
+    
+    .eval-row { 
+      background: #ffffff; 
+      border: 1px solid #e2e8f0; 
+      border-radius: 14px; 
+      padding: 16px; 
+      margin-bottom: 14px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    }
+    
+    .correct { 
+      background: #dcfce7; 
+      color: #15803d; 
+      padding: 5px 10px; 
+      border-radius: 8px; 
+      font-size: 12px;
+      font-weight: 700;
+    }
+    
+    .incorrect { 
+      background: #ffe4e6; 
+      color: #be123c; 
+      padding: 5px 10px; 
+      border-radius: 8px; 
+      font-size: 12px;
+      font-weight: 700;
+    }
+    
+    .feedback-box { 
+      background: #ffffff; 
+      padding: 20px 24px; 
+      border-top: 2px solid #e0f2fe; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 10px; 
+    }
+    
+    .feedback-box textarea { 
+      width: 100%; 
+      padding: 12px; 
+      border: 1.5px solid #e2e8f0; 
+      border-radius: 12px; 
+      resize: none; 
+      font-family: 'Outfit', sans-serif; 
+      outline: none; 
+      box-sizing: border-box;
+      background: #f8fafc;
+    }
+
+    .materiales-grid { 
+      width: 100%;
+      display: none; 
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+      gap: 26px; 
+      padding-bottom: 40px; 
+    }
+    
+    .card { 
+      background: #ffffff; 
+      border-radius: 22px; 
+      border: 1px solid #e2e8f0; 
+      box-shadow: var(--shadow-relief); 
+      overflow: hidden; 
+      display: flex; 
+      flex-direction: column; 
+      transition: all 0.3s ease; 
+    }
+    
+    .card:hover { 
+      transform: translateY(-8px); 
+      border-color: #3b82f6; 
+      box-shadow: 0 22px 40px -10px rgba(59, 130, 246, 0.25); 
+    }
+    
+    .card-preview { 
+      height: 165px; 
+      background: linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%); 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      position: relative; 
+      overflow: hidden; 
+    }
+    
+    .tech-pattern { 
+      position: absolute; 
+      top: 0; left: 0; right: 0; bottom: 0; 
+      background-image: linear-gradient(rgba(59, 130, 246, 0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.12) 1px, transparent 1px); 
+      background-size: 20px 20px; 
+      z-index: 1; 
+    }
+    
+    .preview-icon { 
+      width: 62px; 
+      height: 62px; 
+      fill: #2563eb; 
+      z-index: 4; 
+      filter: drop-shadow(0 8px 16px rgba(59, 130, 246, 0.35)); 
+    }
+    
+    .card-preview img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      z-index: 3; 
+    }
+    
+    .play-icon { 
+      position: absolute; 
+      width: 56px; 
+      height: 56px; 
+      background: var(--primary-grad); 
+      border-radius: 50%; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      color: #ffffff; 
+      font-size: 20px; 
+      padding-left: 4px; 
+      z-index: 5;
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.55);
+    }
+    
+    .card-body { 
+      padding: 20px 22px; 
+      flex: 1; 
+      display: flex; 
+      flex-direction: column; 
+      background: #ffffff; 
+    }
+    
+    .card-title { 
+      margin: 0 0 8px 0; 
+      font-size: 16px; 
+      font-weight: 800; 
+      color: #0f172a; 
+      text-transform: uppercase; 
+    }
+    
+    .card-desc { 
+      margin: 0; 
+      font-size: 13px; 
+      color: #64748b; 
+      display: -webkit-box; 
+      -webkit-line-clamp: 3; 
+      -webkit-box-orient: vertical; 
+      overflow: hidden; 
+    }
+    
+    .card-footer { 
+      padding: 0 22px 22px; 
+      background: #ffffff; 
+    }
+    
+    .btn-ver { 
+      width: 100%; 
+      padding: 12px; 
+      border: none; 
+      border-radius: 12px; 
+      background: var(--primary-grad); 
+      color: #ffffff; 
+      font-weight: 800; 
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: 0.6px;
+      cursor: pointer; 
+      box-shadow: 0 8px 18px -5px rgba(59, 130, 246, 0.45);
+      transition: 0.25s; 
+    }
+    
+    .btn-ver:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -5px rgba(99, 102, 241, 0.6); 
+    }
+    
+    .watermark {
+      position: fixed; 
+      bottom: 10px; 
+      right: 16px; 
+      font-size: 11px; 
+      color: #94a3b8; 
+      font-weight: 700; 
+      z-index: 9999; 
+      letter-spacing: 0.6px; 
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="watermark">Desarrollado por Jonatan Santiago Guerrero</div>
+
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <svg width="42" height="34" viewBox="0 0 120 96" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+        <path d="M40 16L14 48L40 80" stroke="#38D394" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M80 16L106 48L80 80" stroke="#38D394" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="60" y="29" width="27" height="27" transform="rotate(45 60 29)" fill="#000000"/>
+      </svg>
+      <div class="brand-text"><h2>martec</h2><span>Portal Líder</span></div>
+    </div>
+    <ul class="menu">
+      <li id="tab-dashboard" class="active" onclick="switchTab('Dashboard')">📊 Analítica General</li>
+      <li id="tab-equipo" onclick="switchTab('Equipo')">👥 Gestión de Asesores</li>
+      <li id="tab-asistencia" onclick="switchTab('Asistencia')">📅 Asistencia Mensual</li>
+      <li id="tab-evaluaciones" onclick="switchTab('Evaluaciones')">📝 Resultados Evaluación</li>
+      <li id="tab-materiales" onclick="switchTab('Materiales')">📚 Material Capacitación</li>
+      <li class="menu-logout" onclick="window.location.href='index.html'">🚪 Cerrar Sesión</li>
+    </ul>
+  </div>
+
+  <div class="main-wrapper">
+    <div class="topbar">
+      <div class="topbar-title" id="titulo-seccion">Analítica General</div>
+      <div class="topbar-user"><span id="nombre-lider">Cargando...</span><div class="avatar">L</div></div>
+    </div>
+
+    <div class="main-content">
+      
+      <!-- VISTA DASHBOARD -->
+      <div id="vista-dashboard" style="display:flex; flex-direction:column;">
+         <div class="dashboard-grid">
+            <div class="dash-card">
+              <div style="font-size:12px; font-weight:800; color:var(--text-light); letter-spacing:1px;">TOTAL ASESORES</div>
+              <div class="dash-value" id="kpi-team">0</div>
+            </div>
+            <div class="dash-card">
+              <div style="font-size:12px; font-weight:800; color:var(--text-light); letter-spacing:1px;">SUPERVISORES</div>
+              <div class="dash-value" id="kpi-sups">0</div>
+            </div>
+            <div class="dash-card">
+              <div style="font-size:12px; font-weight:800; color:var(--text-light); letter-spacing:1px;">PROMEDIO GENERAL</div>
+              <div class="dash-value" id="kpi-avg">0 pts</div>
+            </div>
+         </div>
+         <div class="dash-card" style="margin-top:4px;">
+            <h3 style="margin-top:0; font-size:17px; font-weight:800;">Rendimiento por Evaluación</h3>
+            <canvas id="chartTeam" height="80"></canvas>
+         </div>
+      </div>
+
+      <!-- VISTA EQUIPO -->
+      <div class="table-container" id="vista-equipo">
+         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+           <h3 style="margin:0; font-weight:800;">Listado General de Asesores</h3>
+           <div style="display:flex; gap:10px; flex-wrap:wrap;">
+             <select id="eq-sup-filtro" class="filter-input" onchange="renderizarTablaEquipo()">
+               <option value="">Todos los Supervisores</option>
+             </select>
+             <input type="text" id="eq-busqueda" class="filter-input" placeholder="🔍 Buscar asesor o DNI..." onkeyup="renderizarTablaEquipo()">
+             <button class="btn-action btn-excel" onclick="descargarExcelEquipo()">📊 Exportar Equipo (.xlsx)</button>
+           </div>
+         </div>
+         <table id="tabla-equipo">
+           <thead>
+             <tr>
+               <th>DNI</th>
+               <th>Nombres</th>
+               <th>Supervisor</th>
+               <th>Teléfono</th>
+               <th>Contraseña</th>
+               <th>Estado</th>
+               <th style="text-align:right;">Acciones</th>
+             </tr>
+           </thead>
+           <tbody id="body-equipo"></tbody>
+         </table>
+      </div>
+
+      <!-- VISTA ASISTENCIA MENSUAL (CON PERMISO DE EDICIÓN) -->
+      <div class="table-container" id="vista-asistencia" style="display:none;">
+         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-bottom:1px solid #f1f5f9; padding-bottom:16px;">
+           <div>
+             <h3 style="margin:0; font-weight:800;">Control de Asistencia Mensual (Edición Habilitada)</h3>
+             <div style="font-size:12px; color:#64748b; font-weight:600; margin-top:2px;">A: Asistió • T: Tardanza • F: Falta • Justificado (con motivo). Como Líder puedes modificar registros guardados.</div>
+           </div>
+           <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+             <input type="month" id="asis-mes" class="filter-input" onchange="renderizarMatrizAsistencia()">
+             <input type="date" id="asis-fecha-filtro" class="filter-input" title="Filtrar por fecha específica" onchange="renderizarMatrizAsistencia()">
+             <select id="asis-sup-filtro" class="filter-input" onchange="renderizarMatrizAsistencia()">
+               <option value="">Todos los Supervisores</option>
+             </select>
+             <input type="text" id="asis-busqueda" class="filter-input" placeholder="🔍 Buscar asesor o DNI..." onkeyup="renderizarMatrizAsistencia()">
+             <button class="btn-action btn-excel" onclick="descargarExcelAsistencia()">📊 Exportar Excel (.xlsx)</button>
+             <button class="btn-action" id="btn-guardar-asis-lider" onclick="guardarCambiosAsistencia()">💾 Guardar Cambios</button>
+           </div>
+         </div>
+         <div class="asis-matrix-wrap" id="asis-matrix-container"></div>
+      </div>
+
+      <!-- VISTA EVALUACIONES -->
+      <div class="table-container" id="vista-evaluaciones">
+         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+           <h3 style="margin:0; font-weight:800;">Calificaciones Generales</h3>
+           <button class="btn-action btn-excel" onclick="descargarExcelEvaluaciones()">📊 Exportar Evaluaciones (.xlsx)</button>
+         </div>
+         <table id="tabla-evaluaciones">
+           <thead>
+             <tr>
+               <th>DNI</th>
+               <th>Asesor</th>
+               <th>Examen</th>
+               <th>Nota Final</th>
+               <th>Fecha</th>
+               <th>Feedback</th>
+             </tr>
+           </thead>
+           <tbody id="body-evaluaciones"></tbody>
+         </table>
+      </div>
+
+      <!-- VISTA MATERIALES -->
+      <div class="materiales-grid" id="vista-materiales"></div>
+
+    </div>
+  </div>
+
+  <!-- MODAL GENERAL (Examen y Video/PDF) -->
+  <div class="modal-overlay" id="modal-general">
+    <div class="modal-box" id="modal-caja">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Detalle</h3>
+        <button style="background:none; border:none; color:white; font-size:20px; cursor:pointer;" onclick="cerrarModal()">✕</button>
+      </div>
+      <div class="modal-content-area" id="modal-content"></div>
+      <div class="feedback-box" id="modal-feedback" style="display:none;">
+         <h4 style="margin:0; color:#0f172a; font-weight:800;">Dejar Feedback Constructivo</h4>
+         <textarea id="txt-feedback" rows="3" placeholder="Ej. Excelente manejo de objeciones..."></textarea>
+         <input type="hidden" id="feed-res-id"> 
+         <input type="hidden" id="feed-res-dni">
+         <button class="btn-action" style="width:160px; align-self:flex-end;" onclick="guardarFeedback()">Enviar Feedback</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR ASESOR -->
+  <div class="modal-overlay" id="modal-editar-asesor">
+    <div class="modal-box compact">
+      <div class="modal-header">
+        <h3 class="modal-title">Editar Datos del Asesor</h3>
+        <button style="background:none; border:none; color:white; font-size:20px; cursor:pointer;" onclick="cerrarModalAsesor()">✕</button>
+      </div>
+      <div class="modal-content-area">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>DNI</label>
+            <input type="text" id="ed-dni" readonly style="background:#e2e8f0;">
+          </div>
+          <div class="form-group">
+            <label>Teléfono / Celular</label>
+            <input type="text" id="ed-telefono">
+          </div>
+          <div class="form-group full-width">
+            <label>Nombres Completos</label>
+            <input type="text" id="ed-nombres">
+          </div>
+          <div class="form-group">
+            <label>Supervisor Asignado</label>
+            <input type="text" id="ed-supervisor">
+          </div>
+          <div class="form-group">
+            <label>Contraseña</label>
+            <input type="text" id="ed-clave">
+          </div>
+          <div class="form-group full-width">
+            <label>Estado</label>
+            <select id="ed-estado">
+              <option value="Activo">Activo</option>
+              <option value="Bloqueado">Bloqueado</option>
+              <option value="Cesado">Cesado</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+          <button class="btn-action btn-dark" onclick="cerrarModalAsesor()">Cancelar</button>
+          <button class="btn-action" id="btn-guardar-asesor" onclick="guardarEdicionAsesor()">💾 Guardar Cambios</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxH3ZO17EGbPMU8EG6tv8pijwRz8o8py9DmyzkOG9Nrx6DPaZn2J-Nv3M0MU7m1GJXd/exec';
+    
+    let nombreLider = ""; 
+    let equipoCompleto = []; 
+    let supervisoresList = [];
+    let examenesList = []; 
+    let resultadosGlobal = []; 
+    let asistenciaGlobal = [];
+    let cambiosPendientesAsis = {};
+    let chartInstance = null;
+
+    // Feriados de Perú (fijos MM-DD + Semana Santa)
+    const FERIADOS_FIJOS_PE = [
+      '01-01', '05-01', '06-07', '06-29', '07-23', '07-28', '07-29',
+      '08-06', '08-30', '10-08', '11-01', '12-08', '12-09', '12-25'
+    ];
+    const FERIADOS_MOVILES_PE = [
+      '2025-04-17', '2025-04-18',
+      '2026-04-02', '2026-04-03',
+      '2027-03-25', '2027-03-26'
+    ];
+
+    window.onload = async () => {
+        const userData = localStorage.getItem('martec_user');
+        if(!userData) {
+            return window.location.href = 'index.html';
+        }
+
+        const hoy = new Date();
+        document.getElementById('asis-mes').value = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}`;
+        
+        const dniLider = JSON.parse(userData).usuario;
+        
+        try {
+            const resU = await fetch(API_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ action: 'leer', tabla: 'Usuarios' }) 
+            });
+            const dataU = await resU.json();
+            const perfil = dataU.data.find(u => u.DNI == dniLider);
+            
+            if (perfil) { 
+                nombreLider = perfil['Nombres'] ? perfil['Nombres'].split(' ')[0].toUpperCase() : ''; 
+                document.getElementById('nombre-lider').innerText = "Líder " + nombreLider; 
+            }
+            cargarDatos();
+        } catch(e) {
+            console.error(e);
+        }
+    };
+
+    function switchTab(tab) {
+        document.querySelectorAll('.menu li').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-' + tab.toLowerCase()).classList.add('active');
+        
+        const tits = {
+            'Dashboard': 'Analítica General', 
+            'Equipo': 'Gestión de Asesores', 
+            'Asistencia': 'Control de Asistencia Mensual',
+            'Evaluaciones': 'Resultados Evaluación',
+            'Materiales': 'Materiales de Capacitación'
+        };
+        
+        document.getElementById('titulo-seccion').innerText = tits[tab];
+        document.getElementById('vista-dashboard').style.display = tab === 'Dashboard' ? 'flex' : 'none';
+        document.getElementById('vista-equipo').style.display = tab === 'Equipo' ? 'flex' : 'none';
+        document.getElementById('vista-asistencia').style.display = tab === 'Asistencia' ? 'flex' : 'none';
+        document.getElementById('vista-evaluaciones').style.display = tab === 'Evaluaciones' ? 'flex' : 'none';
+        document.getElementById('vista-materiales').style.display = tab === 'Materiales' ? 'grid' : 'none';
+
+        if (tab === 'Asistencia') {
+            renderizarMatrizAsistencia();
+        }
+    }
+
+    async function cargarDatos() {
+        const [resUsers, resEx, resRes, resMat, resAsis] = await Promise.all([
+          fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'leer', tabla: 'Usuarios' }) }),
+          fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'leer', tabla: 'Examenes' }) }),
+          fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'leer', tabla: 'Resultados' }) }),
+          fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'leer', tabla: 'Materiales' }) }),
+          fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'leer', tabla: 'Asistencia' }) })
+        ]);
+        
+        const dataUsers = await resUsers.json(); 
+        const dataEx = await resEx.json(); 
+        const dataRes = await resRes.json();
+        const dataMat = await resMat.json();
+        const dataAsis = await resAsis.json();
+        
+        if (dataUsers.success) {
+            equipoCompleto = dataUsers.data.filter(d => d.Rol === 'Asesor');
+            supervisoresList = [...new Set(equipoCompleto.map(a => (a.Supervisor || '').trim()).filter(Boolean))].sort();
+
+            document.getElementById('kpi-team').innerText = equipoCompleto.length;
+            document.getElementById('kpi-sups').innerText = supervisoresList.length;
+
+            poblarFiltroSupervisores('eq-sup-filtro');
+            poblarFiltroSupervisores('asis-sup-filtro');
+            renderizarTablaEquipo();
+        }
+
+        if (dataAsis.success) {
+            asistenciaGlobal = dataAsis.data || [];
+            if (document.getElementById('vista-asistencia').style.display === 'flex') {
+                renderizarMatrizAsistencia();
+            }
+        }
+        
+        if (dataEx.success && dataRes.success) {
+            examenesList = dataEx.data;
+            resultadosGlobal = dataRes.data;
+            
+            let prom = resultadosGlobal.length > 0 ? resultadosGlobal.reduce((acc,r) => acc + (parseInt(r.Nota)||0), 0) / resultadosGlobal.length : 0;
+            document.getElementById('kpi-avg').innerText = prom.toFixed(1) + " pts";
+
+            let mapData = {};
+            resultadosGlobal.forEach(r => {
+                let ex = examenesList.find(e => e.ID === r.ID_Examen); 
+                let nom = ex ? ex.Titulo.substring(0,10) : 'Ex';
+                if (!mapData[nom]) mapData[nom] = {s:0, c:0};
+                mapData[nom].s += parseInt(r.Nota)||0; 
+                mapData[nom].c++;
+            });
+            
+            let lbl = [], dta = []; 
+            Object.keys(mapData).forEach(k => { 
+                lbl.push(k); 
+                dta.push(mapData[k].s / mapData[k].c); 
+            });
+            
+            if (chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(document.getElementById('chartTeam').getContext('2d'), { 
+                type: 'bar', 
+                data: { 
+                    labels: lbl, 
+                    datasets: [{ label: 'Promedio General', data: dta, backgroundColor: '#3b82f6', borderRadius: 10 }] 
+                }
+            });
+
+            const tbodyV = document.getElementById('body-evaluaciones'); 
+            tbodyV.innerHTML = '';
+            
+            resultadosGlobal.slice().reverse().forEach(r => {
+                const exInfo = examenesList.find(e => e.ID === r.ID_Examen);
+                const btn = `<button class="btn-action" onclick="verDetalleExamen('${r.ID}', '${r.DNI}')">Evaluar</button>`;
+                
+                tbodyV.innerHTML += `
+                  <tr>
+                    <td>${r.DNI}</td>
+                    <td>${r.Nombres}</td>
+                    <td>${exInfo ? exInfo.Titulo : '-'}</td>
+                    <td><span class="badge-activo">${r.Nota} Pts</span></td>
+                    <td>${r.Fecha}</td>
+                    <td>${btn}</td>
+                  </tr>`;
+            });
+        }
+
+        if (dataMat.success) {
+            renderizarMateriales(dataMat.data.filter(m => m.Estado === 'Activo'));
+        }
+    }
+
+    function poblarFiltroSupervisores(selectId) {
+        const sel = document.getElementById(selectId);
+        const valorActual = sel.value;
+        sel.innerHTML = '<option value="">Todos los Supervisores</option>';
+        supervisoresList.forEach(s => {
+            sel.innerHTML += `<option value="${s}">${s}</option>`;
+        });
+        sel.value = valorActual;
+    }
+
+    function renderizarTablaEquipo() {
+        const sup = document.getElementById('eq-sup-filtro').value;
+        const busq = (document.getElementById('eq-busqueda').value || '').toLowerCase();
+        const tbodyE = document.getElementById('body-equipo');
+        tbodyE.innerHTML = '';
+
+        const filtrados = equipoCompleto.filter(d => {
+            const matchSup = !sup || (d.Supervisor || '').trim() === sup;
+            const matchBusq = !busq || (d.Nombres || '').toLowerCase().includes(busq) || (d.DNI || '').toString().includes(busq);
+            return matchSup && matchBusq;
+        });
+
+        filtrados.forEach(d => {
+            const clave = d['Contraseña'] || d['Clave'] || '';
+            const badgeCls = d.Estado === 'Activo' ? 'badge-activo' : 'badge-falta';
+            tbodyE.innerHTML += `
+              <tr>
+                <td style="font-family:monospace;">${d.DNI}</td>
+                <td>${d.Nombres}</td>
+                <td>${d.Supervisor || '-'}</td>
+                <td>${d.Telefono || '-'}</td>
+                <td style="font-family:monospace; color:#2563eb;">${clave}</td>
+                <td><span class="${badgeCls}">${d.Estado}</span></td>
+                <td style="text-align:right;">
+                  <button class="btn-action btn-dark" style="padding:6px 12px; font-size:11px;" onclick="abrirModalEditarAsesor('${d.DNI}')">✏️ Editar</button>
+                </td>
+              </tr>`;
+        });
+    }
+
+    /* ================= EDITAR ASESOR Y CONTRASEÑA ================= */
+    function abrirModalEditarAsesor(dni) {
+        const asesor = equipoCompleto.find(a => a.DNI.toString() === dni.toString());
+        if (!asesor) return;
+
+        document.getElementById('ed-dni').value = asesor.DNI;
+        document.getElementById('ed-nombres').value = asesor.Nombres || '';
+        document.getElementById('ed-telefono').value = asesor.Telefono || '';
+        document.getElementById('ed-supervisor').value = asesor.Supervisor || '';
+        document.getElementById('ed-clave').value = asesor['Contraseña'] || asesor['Clave'] || '';
+        document.getElementById('ed-estado').value = asesor.Estado || 'Activo';
+        document.getElementById('modal-editar-asesor').style.display = 'flex';
+    }
+
+    function cerrarModalAsesor() {
+        document.getElementById('modal-editar-asesor').style.display = 'none';
+    }
+
+    async function guardarEdicionAsesor() {
+        const dni = document.getElementById('ed-dni').value;
+        const asesor = equipoCompleto.find(a => a.DNI.toString() === dni.toString());
+        if (!asesor) return;
+
+        asesor.Nombres = document.getElementById('ed-nombres').value.trim();
+        asesor.Telefono = document.getElementById('ed-telefono').value.trim();
+        asesor.Supervisor = document.getElementById('ed-supervisor').value.trim();
+        asesor['Contraseña'] = document.getElementById('ed-clave').value.trim();
+        asesor.Estado = document.getElementById('ed-estado').value;
+
+        const btn = document.getElementById('btn-guardar-asesor');
+        btn.disabled = true;
+        btn.innerText = 'Guardando...';
+
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'guardar', tabla: 'Usuarios', datos: asesor })
+            });
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message);
+
+            alert('✅ Datos del asesor actualizados.');
+            cerrarModalAsesor();
+            await cargarDatos();
+        } catch (e) {
+            alert('❌ Error al guardar: ' + (e.message || ''));
+        } finally {
+            btn.disabled = false;
+            btn.innerText = '💾 Guardar Cambios';
+        }
+    }
+
+    /* ================= MATRIZ MENSUAL DE ASISTENCIA (LÍDER PUEDE EDITAR) ================= */
+    function normalizarEstadoAsis(val) {
+        if (!val) return '';
+        const v = val.toString().trim();
+        if (v === 'Presente' || v === 'A') return 'A';
+        if (v === 'Tardanza' || v === 'T') return 'T';
+        if (v === 'Falta' || v === 'F') return 'F';
+        if (v === 'Permiso' || v === 'Justificado' || v === 'J') return 'Justificado';
+        return v;
+    }
+
+    function obtenerDiasLaborablesMes(ymStr, fechaFiltro) {
+        const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        const dias = [];
+
+        if (fechaFiltro) {
+            const [y, m, d] = fechaFiltro.split('-').map(Number);
+            const dt = new Date(y, m - 1, d);
+            const iso = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const ddmmyyyy = `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`;
+            dias.push({ iso, ddmmyyyy, label: `${diasSemana[dt.getDay()]} ${String(d).padStart(2, '0')}` });
+            return dias;
+        }
+
+        const [year, month] = ymStr.split('-').map(Number);
+        const totalDias = new Date(year, month, 0).getDate();
+
+        for (let d = 1; d <= totalDias; d++) {
+            const dt = new Date(year, month - 1, d);
+            if (dt.getDay() === 0) continue; // Sin domingos
+
+            const mmdd = `${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const iso = `${year}-${mmdd}`;
+            if (FERIADOS_FIJOS_PE.includes(mmdd) || FERIADOS_MOVILES_PE.includes(iso)) continue; // Sin feriados
+
+            const ddmmyyyy = `${String(d).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+            dias.push({ iso, ddmmyyyy, label: `${diasSemana[dt.getDay()]} ${String(d).padStart(2, '0')}` });
+        }
+        return dias;
+    }
+
+    function renderizarMatrizAsistencia() {
+        const ym = document.getElementById('asis-mes').value;
+        const fechaFiltro = document.getElementById('asis-fecha-filtro').value;
+        const supFiltro = document.getElementById('asis-sup-filtro').value;
+        const busq = (document.getElementById('asis-busqueda').value || '').toLowerCase();
+        const cont = document.getElementById('asis-matrix-container');
+
+        const dias = obtenerDiasLaborablesMes(ym, fechaFiltro);
+        const asesoresFiltrados = equipoCompleto.filter(a => {
+            const matchSup = !supFiltro || (a.Supervisor || '').trim() === supFiltro;
+            const matchBusq = !busq || (a.Nombres || '').toLowerCase().includes(busq) || (a.DNI || '').toString().includes(busq);
+            return matchSup && matchBusq;
+        });
+
+        if (asesoresFiltrados.length === 0) {
+            cont.innerHTML = '<div style="padding:36px; text-align:center; color:#64748b; font-weight:600;">No se encontraron asesores.</div>';
+            return;
+        }
+
+        let html = `<table class="asis-matrix"><thead><tr><th class="col-sticky">Asesor / DNI / Sup.</th>`;
+        dias.forEach(dia => {
+            html += `<th>${dia.label}</th>`;
+        });
+        html += `</tr></thead><tbody>`;
+
+        asesoresFiltrados.forEach(a => {
+            html += `<tr><td class="col-sticky"><div style="font-weight:800; color:#0f172a;">${a.Nombres}</div><div style="font-size:11px; color:#64748b; font-family:monospace;">${a.DNI} • ${a.Supervisor || 'Sin Sup.'}</div></td>`;
+
+            dias.forEach(dia => {
+                const key = `${a.DNI}|${dia.ddmmyyyy}`;
+                const regGuardado = asistenciaGlobal.find(r => r.DNI == a.DNI && (r.Fecha === dia.ddmmyyyy || r.Fecha === dia.iso));
+                const pendiente = cambiosPendientesAsis[key];
+
+                const estado = pendiente ? pendiente.Estado : (regGuardado ? normalizarEstadoAsis(regGuardado.Estado) : '');
+                const motivo = pendiente ? (pendiente.Motivo || '') : (regGuardado ? (regGuardado.Motivo || '') : '');
+                const clsColor = estado ? `asis-${estado}` : '';
+
+                html += `<td>
+                  <select class="asis-select ${clsColor}" onchange="onCambioAsistencia('${a.DNI}', '${a.Nombres.replace(/'/g, "\\'")}', '${dia.ddmmyyyy}', this)">
+                    <option value="">-</option>
+                    <option value="A" ${estado === 'A' ? 'selected' : ''}>A</option>
+                    <option value="T" ${estado === 'T' ? 'selected' : ''}>T</option>
+                    <option value="F" ${estado === 'F' ? 'selected' : ''}>F</option>
+                    <option value="Justificado" ${estado === 'Justificado' ? 'selected' : ''}>Justif.</option>
+                  </select>
+                  ${estado === 'Justificado' && motivo ? `<span class="motivo-tag" title="Motivo: ${motivo.replace(/"/g, '&quot;')}">📝 ${motivo}</span>` : ''}
+                </td>`;
+            });
+            html += `</tr>`;
+        });
+
+        html += `</tbody></table>`;
+        cont.innerHTML = html;
+    }
+
+    function onCambioAsistencia(dni, nombres, fechaDDMMYYYY, selectEl) {
+        const val = selectEl.value;
+        const key = `${dni}|${fechaDDMMYYYY}`;
+        let motivo = '';
+
+        if (val === 'Justificado') {
+            motivo = prompt(`Ingresa el motivo de la justificación para ${nombres} (${fechaDDMMYYYY}):`);
+            if (motivo === null || motivo.trim() === '') {
+                alert('Debes ingresar un motivo para marcar como Justificado.');
+                selectEl.value = '';
+                selectEl.className = 'asis-select';
+                delete cambiosPendientesAsis[key];
+                return;
+            }
+            motivo = motivo.trim();
+        }
+
+        if (val === '') {
+            delete cambiosPendientesAsis[key];
+        } else {
+            cambiosPendientesAsis[key] = {
+                DNI: dni,
+                Nombres: nombres,
+                Fecha: fechaDDMMYYYY,
+                Estado: val,
+                Motivo: motivo
+            };
+        }
+
+        selectEl.className = 'asis-select ' + (val ? `asis-${val}` : '');
+        if (val === 'Justificado') {
+            renderizarMatrizAsistencia();
+        }
+    }
+
+    async function guardarCambiosAsistencia() {
+        const registros = Object.values(cambiosPendientesAsis);
+        if (registros.length === 0) {
+            return alert('No hay cambios de asistencia por guardar.');
+        }
+
+        const btn = document.getElementById('btn-guardar-asis-lider');
+        btn.disabled = true;
+        btn.innerText = 'Guardando...';
+
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'guardar_asistencia', datos: registros })
+            });
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message);
+
+            cambiosPendientesAsis = {};
+            alert(`✅ Se guardaron ${registros.length} registros de asistencia.`);
+            await cargarDatos();
+            renderizarMatrizAsistencia();
+        } catch (e) {
+            alert('❌ Error al guardar asistencia: ' + (e.message || ''));
+        } finally {
+            btn.disabled = false;
+            btn.innerText = '💾 Guardar Cambios';
+        }
+    }
+
+    function exportarExcelEstilizadoAsistencia(tituloReporte, subtituloReporte, filasAsesores, dias, registrosAsis, nombreArchivo) {
+      const wb = XLSX.utils.book_new();
+      const ws = {};
+
+      const borderThin = {
+        top: { style: 'thin', color: { rgb: 'CBD5E1' } },
+        bottom: { style: 'thin', color: { rgb: 'CBD5E1' } },
+        left: { style: 'thin', color: { rgb: 'CBD5E1' } },
+        right: { style: 'thin', color: { rgb: 'CBD5E1' } }
+      };
+
+      const styleTitle = {
+        font: { name: 'Calibri', sz: 14, bold: true, color: { rgb: 'FFFFFF' } },
+        fill: { fgColor: { rgb: '0F172A' } },
+        alignment: { horizontal: 'left', vertical: 'center' }
+      };
+
+      const styleSub = {
+        font: { name: 'Calibri', sz: 10, italic: true, color: { rgb: '334155' } },
+        fill: { fgColor: { rgb: 'E0F2FE' } },
+        alignment: { horizontal: 'left', vertical: 'center' }
+      };
+
+      const styleHeader = {
+        font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: 'FFFFFF' } },
+        fill: { fgColor: { rgb: '1E3A8A' } },
+        alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+        border: borderThin
+      };
+
+      const estilosEstado = {
+        'A': {
+          font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: '15803D' } },
+          fill: { fgColor: { rgb: 'DCFCE7' } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+          border: borderThin
+        },
+        'T': {
+          font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: '854D0E' } },
+          fill: { fgColor: { rgb: 'FEF9C3' } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+          border: borderThin
+        },
+        'F': {
+          font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: 'BE123C' } },
+          fill: { fgColor: { rgb: 'FFE4E6' } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+          border: borderThin
+        },
+        'Justificado': {
+          font: { name: 'Calibri', sz: 9, bold: true, color: { rgb: '0369A1' } },
+          fill: { fgColor: { rgb: 'E0F2FE' } },
+          alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+          border: borderThin
+        }
+      };
+
+      const headers = ['N°', 'DNI', 'ASESOR', 'SUPERVISOR', ...dias.map(d => d.label.toUpperCase())];
+      const totalCols = headers.length;
+
+      // Fila 0: Título principal
+      ws[XLSX.utils.encode_cell({ r: 0, c: 0 })] = { v: tituloReporte, t: 's', s: styleTitle };
+      for (let c = 1; c < totalCols; c++) {
+        ws[XLSX.utils.encode_cell({ r: 0, c })] = { v: '', t: 's', s: styleTitle };
+      }
+
+      // Fila 1: Subtítulo
+      ws[XLSX.utils.encode_cell({ r: 1, c: 0 })] = { v: subtituloReporte, t: 's', s: styleSub };
+      for (let c = 1; c < totalCols; c++) {
+        ws[XLSX.utils.encode_cell({ r: 1, c })] = { v: '', t: 's', s: styleSub };
+      }
+
+      // Fila 3: Cabeceras
+      const headerRowIdx = 3;
+      headers.forEach((h, cIdx) => {
+        ws[XLSX.utils.encode_cell({ r: headerRowIdx, c: cIdx })] = { v: h, t: 's', s: styleHeader };
+      });
+
+      // Filas de datos
+      filasAsesores.forEach((a, idx) => {
+        const rIdx = headerRowIdx + 1 + idx;
+        const zebraBg = idx % 2 === 1 ? 'F8FAFC' : 'FFFFFF';
+
+        const styleBaseCenter = {
+          font: { name: 'Calibri', sz: 10, color: { rgb: '0F172A' } },
+          fill: { fgColor: { rgb: zebraBg } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+          border: borderThin
+        };
+
+        const styleBaseLeft = {
+          font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: '0F172A' } },
+          fill: { fgColor: { rgb: zebraBg } },
+          alignment: { horizontal: 'left', vertical: 'center' },
+          border: borderThin
+        };
+
+        ws[XLSX.utils.encode_cell({ r: rIdx, c: 0 })] = { v: idx + 1, t: 'n', s: styleBaseCenter };
+        ws[XLSX.utils.encode_cell({ r: rIdx, c: 1 })] = { v: String(a.DNI || ''), t: 's', s: styleBaseCenter };
+        ws[XLSX.utils.encode_cell({ r: rIdx, c: 2 })] = { v: String(a.Nombres || ''), t: 's', s: styleBaseLeft };
+        ws[XLSX.utils.encode_cell({ r: rIdx, c: 3 })] = { v: String(a.Supervisor || 'En capacitación'), t: 's', s: styleBaseLeft };
+
+        dias.forEach((dia, dIdx) => {
+          const cIdx = 4 + dIdx;
+          const reg = registrosAsis.find(r => r.DNI == a.DNI && (r.Fecha === dia.ddmmyyyy || r.Fecha === dia.iso));
+          const est = reg ? normalizarEstadoAsis(reg.Estado) : '';
+          const valCelda = (est === 'Justificado' && reg && reg.Motivo) ? `Justif. (${reg.Motivo})` : est;
+          const estiloCelda = estilosEstado[est] || styleBaseCenter;
+
+          ws[XLSX.utils.encode_cell({ r: rIdx, c: cIdx })] = { v: valCelda, t: 's', s: estiloCelda };
+        });
+      });
+
+      // Fila de leyenda al pie
+      const legendRowIdx = headerRowIdx + 1 + filasAsesores.length + 1;
+      ws[XLSX.utils.encode_cell({ r: legendRowIdx, c: 0 })] = {
+        v: 'LEYENDA:',
+        t: 's',
+        s: { font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: '0F172A' } } }
+      };
+      ws[XLSX.utils.encode_cell({ r: legendRowIdx, c: 2 })] = { v: 'A = Asistió', t: 's', s: estilosEstado['A'] };
+      ws[XLSX.utils.encode_cell({ r: legendRowIdx, c: 3 })] = { v: 'T = Tardanza', t: 's', s: estilosEstado['T'] };
+      if (totalCols > 4) ws[XLSX.utils.encode_cell({ r: legendRowIdx, c: 4 })] = { v: 'F = Falta', t: 's', s: estilosEstado['F'] };
+      if (totalCols > 5) ws[XLSX.utils.encode_cell({ r: legendRowIdx, c: 5 })] = { v: 'Justificado', t: 's', s: estilosEstado['Justificado'] };
+
+      ws['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: totalCols - 1 } },
+        { s: { r: 1, c: 0 }, e: { r: 1, c: totalCols - 1 } }
+      ];
+
+      ws['!cols'] = [
+        { wch: 5 },
+        { wch: 13 },
+        { wch: 36 },
+        { wch: 24 },
+        ...dias.map(() => ({ wch: 13 }))
+      ];
+
+      const rowsMeta = [{ hpt: 28 }, { hpt: 20 }, { hpt: 10 }, { hpt: 26 }];
+      for (let i = 0; i < filasAsesores.length; i++) rowsMeta.push({ hpt: 22 });
+      ws['!rows'] = rowsMeta;
+
+      ws['!ref'] = XLSX.utils.encode_range({
+        s: { r: 0, c: 0 },
+        e: { r: legendRowIdx, c: totalCols - 1 }
+      });
+
+      XLSX.utils.book_append_sheet(wb, ws, 'Asistencia_Mensual');
+      XLSX.writeFile(wb, nombreArchivo);
+    }
+
+    function descargarExcelAsistencia() {
+        const hoy = new Date();
+        const ym = document.getElementById('asis-mes').value;
+        const fechaFiltro = document.getElementById('asis-fecha-filtro').value;
+        const supFiltro = document.getElementById('asis-sup-filtro').value;
+        const busq = (document.getElementById('asis-busqueda').value || '').toLowerCase();
+        const dias = obtenerDiasLaborablesMes(ym, fechaFiltro);
+
+        const asesoresFiltrados = equipoCompleto.filter(a => {
+            const matchSup = !supFiltro || (a.Supervisor || '').trim() === supFiltro;
+            const matchBusq = !busq || (a.Nombres || '').toLowerCase().includes(busq) || (a.DNI || '').toString().includes(busq);
+            return matchSup && matchBusq;
+        });
+
+        if (asesoresFiltrados.length === 0) return alert('No hay datos para exportar.');
+
+        const subtitulo = `Periodo: ${fechaFiltro || ym}${supFiltro ? ' | Supervisor: ' + supFiltro : ''} | Generado: ${hoy.toLocaleDateString('es-PE')}`;
+        exportarExcelEstilizadoAsistencia(
+            'MARTEC - REPORTE DE CONTROL DE ASISTENCIA',
+            subtitulo,
+            asesoresFiltrados,
+            dias,
+            asistenciaGlobal,
+            `Martec_Asistencia_${ym}.xlsx`
+        );
+    }
+
+
+    function descargarExcelEquipo() {
+      if (!equipoCompleto || equipoCompleto.length === 0) return alert("No hay asesores para exportar.");
+      const filasExport = equipoCompleto.map(d => ({
+        DNI: d.DNI,
+        Asesor: d.Nombres,
+        Supervisor: d.Supervisor || '',
+        Telefono: d.Telefono || '',
+        Estado: d.Estado
+      }));
+      const ws = XLSX.utils.json_to_sheet(filasExport);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Asesores');
+      XLSX.writeFile(wb, `Asesores_General_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+
+    function descargarExcelEvaluaciones() {
+      if (!resultadosGlobal || resultadosGlobal.length === 0) return alert("No hay evaluaciones para exportar.");
+      const filasExport = resultadosGlobal.map(r => {
+        const exInfo = examenesList.find(e => e.ID === r.ID_Examen);
+        return {
+          DNI: r.DNI,
+          Asesor: r.Nombres,
+          Examen: exInfo ? exInfo.Titulo : r.ID_Examen,
+          Nota: r.Nota,
+          Fecha: r.Fecha,
+          Feedback: r.Feedback || ''
+        };
+      });
+      const ws = XLSX.utils.json_to_sheet(filasExport);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Evaluaciones');
+      XLSX.writeFile(wb, `Evaluaciones_General_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+
+    function renderizarMateriales(materiales) {
+        const grid = document.getElementById('vista-materiales'); 
+        grid.innerHTML = '';
+        const svgVideo = `<svg class="preview-icon" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-2z"/></svg>`;
+        const svgDoc = `<svg class="preview-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4 14h-6v-2h6v2zm2-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`;
+
+        materiales.forEach(mat => {
+            const isYouTube = mat.URL && (mat.URL.includes('youtube.com') || mat.URL.includes('youtu.be'));
+            let previewHTML = '';
+            if (isYouTube) {
+                const vid = mat.URL.includes('v=') ? mat.URL.split('v=')[1].split('&')[0] : mat.URL.split('youtu.be/')[1].split('?')[0];
+                previewHTML = `<img src="https://img.youtube.com/vi/${vid}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${vid}/hqdefault.jpg'"><div class="play-icon">▶</div>`;
+            } else {
+                previewHTML = `<div class="tech-pattern"></div>${mat.Archivo && mat.Archivo.includes('.mp4') ? svgVideo : svgDoc}`;
+            }
+            const urlSegura = mat.URL ? mat.URL.replace(/'/g, "\\'") : '';
+            grid.innerHTML += `
+              <div class="card">
+                <div class="card-preview">${previewHTML}</div>
+                <div class="card-body">
+                  <h3 class="card-title">${mat.Titulo}</h3>
+                  <p class="card-desc">${mat.Descripcion || ''}</p>
+                </div>
+                <div class="card-footer">
+                  <button class="btn-ver" onclick="abrirReproductor('${urlSegura}', '${mat.Titulo.replace(/'/g, "\\'")}')">▶ VER MATERIAL</button>
+                </div>
+              </div>`;
+        });
+    }
+
+    function abrirReproductor(url, titulo) {
+        if (!url) return alert("Sin enlace válido.");
+        let embed = url;
+        if (url.includes('youtube.com')) {
+            embed = `https://www.youtube.com/embed/${url.split('v=')[1].split('&')[0]}`;
+        } else if (url.includes('youtu.be')) {
+            embed = `https://www.youtube.com/embed/${url.split('youtu.be/')[1].split('?')[0]}`;
+        } else if (url.includes('/view')) {
+            embed = url.replace('/view', '/preview');
+        }
+        document.getElementById('modal-caja').className = 'modal-box dark-mode';
+        document.getElementById('modal-title').innerText = titulo;
+        document.getElementById('modal-feedback').style.display = 'none';
+        document.getElementById('modal-content').innerHTML = `<iframe src="${embed}" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>`;
+        document.getElementById('modal-general').style.display = 'flex';
+    }
+
+    function verDetalleExamen(idResultado, dniAsesor) {
+        const resultado = resultadosGlobal.find(r => r.ID === idResultado);
+        if (!resultado) return;
+        document.getElementById('modal-caja').className = 'modal-box';
+        document.getElementById('modal-title').innerText = `Respuestas de ${resultado.Nombres}`;
+        document.getElementById('modal-feedback').style.display = 'flex';
+        const content = document.getElementById('modal-content'); 
+        content.innerHTML = '';
+        try {
+            const detalle = JSON.parse(resultado.Detalle || '[]');
+            detalle.forEach((d, i) => {
+                const ok = d.resp === d.corr; 
+                const c = ok ? 'correct' : 'incorrect';
+                content.innerHTML += `
+                  <div class="eval-row">
+                    <div style="font-weight:700; font-size:14px; margin-bottom:8px;">${i+1}. ${d.preg}</div>
+                    <div style="display:flex; justify-content:space-between; font-size:13px;">
+                      <span class="${c}">R: ${d.resp} (Correcta: ${d.corr})</span>
+                    </div>
+                  </div>`;
+            });
+        } catch(e) { console.error(e); }
+        document.getElementById('txt-feedback').value = resultado.Feedback || '';
+        document.getElementById('feed-res-id').value = resultado.ID;
+        document.getElementById('feed-res-dni').value = dniAsesor;
+        document.getElementById('modal-general').style.display = 'flex';
+    }
+
+    function cerrarModal() { 
+        document.getElementById('modal-content').innerHTML = '';
+        document.getElementById('modal-general').style.display = 'none'; 
+    }
+
+    async function guardarFeedback() {
+        const feed = document.getElementById('txt-feedback').value.trim();
+        const resId = document.getElementById('feed-res-id').value;
+        const dni = document.getElementById('feed-res-dni').value;
+        if (!feed) return alert("Escribe un feedback.");
+        let resultado = resultadosGlobal.find(r => r.ID === resId);
+        resultado.Feedback = feed;
+        const notif = {
+            ID: new Date().getTime().toString(), 
+            DNI: dni, 
+            Mensaje: "Tu líder te ha dejado un feedback en tu examen.", 
+            Estado: 'No', 
+            Fecha: new Date().toLocaleDateString('es-PE')
+        };
+        try {
+            await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'guardar', tabla: 'Resultados', datos: resultado }) });
+            await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'guardar_lote', tabla: 'Notificaciones', datos: [notif] }) });
+            alert("Feedback enviado al asesor."); 
+            cerrarModal(); 
+            cargarDatos();
+        } catch(e) { console.error(e); }
+    }
+  </script>
+</body>
+</html>
