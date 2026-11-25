@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Calidad - Martec</title>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
+    
+    * {
+      box-sizing: border-box;
+    }
+
+    :root { 
+      --primary: #3b82f6;
+      --primary-grad: linear-gradient(135deg, #06b6d4 0%, #3b82f6 55%, #6366f1 100%);
+      --accent-grad: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+      --text-main: #0f172a; 
+      --text-light: #64748b; 
+      --border-color: #e2e8f0; 
+      --shadow-relief: 0 12px 30px -8px rgba(59, 130, 246, 0.14), 0 4px 12px -2px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1);
+      --radius-md: 12px; 
+      --radius-lg: 20px; 
+    }
+    
+    body, html { 
+      margin: 0; 
+      padding: 0; 
+      width: 100%;
+      height: 100%; 
+      font-family: 'Outfit', sans-serif; 
+      background-color: #ffffff;
+      background-image:
+        radial-gradient(circle at 18% 10%, rgba(6, 182, 212, 0.09) 0%, transparent 38%),
+        radial-gradient(circle at 92% 88%, rgba(99, 102, 241, 0.11) 0%, transparent 40%);
+      color: var(--text-main); 
+      display: flex; 
+      overflow: hidden; 
+    }
+    
+    .sidebar { 
+      width: 265px; 
+      flex-shrink: 0;
+      background: #ffffff; 
+      color: var(--text-main); 
+      display: flex; 
+      flex-direction: column; 
+      border-right: 1px solid #e2e8f0;
+      box-shadow: 6px 0 30px rgba(37, 99, 235, 0.07);
+      z-index: 10; 
+    }
+    
+    .sidebar-brand { 
+      padding: 24px; 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      border-bottom: 1px solid #f1f5f9; 
+    }
+    
+    .brand-text h2 { 
+      margin: 0; 
+      font-size: 26px; 
+      font-weight: 900; 
+      letter-spacing: -0.8px;
+      color: #000000;
+      line-height: 1.05;
+    }
+
+    .brand-text span {
+      font-size: 11px;
+      color: #06b6d4;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+    }
+    
+    .menu { 
+      list-style: none; 
+      padding: 18px 14px; 
+      margin: 0; 
+      flex: 1; 
+    }
+    
+    .menu li { 
+      padding: 13px 16px; 
+      margin-bottom: 8px; 
+      cursor: pointer; 
+      border-radius: 14px; 
+      color: #475569; 
+      font-weight: 600; 
+      font-size: 14px; 
+      transition: all 0.25s ease; 
+    }
+    
+    .menu li:hover { 
+      background-color: #f0f9ff; 
+      color: #2563eb;
+      transform: translateX(4px);
+    }
+
+    .menu li.active {
+      background: var(--primary-grad);
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 10px 20px -6px rgba(59, 130, 246, 0.55), inset 0 1px 2px rgba(255,255,255,0.35);
+    }
+    
+    .menu-logout { 
+      margin-top: auto; 
+      color: #e11d48 !important; 
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .menu-logout:hover {
+      background-color: #fff1f2 !important;
+      color: #be123c !important;
+    }
+    
+    .main-wrapper { 
+      flex: 1; 
+      min-width: 0;
+      width: 100%;
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden; 
+      background: transparent; 
+    }
+    
+    .topbar { 
+      height: 74px; 
+      width: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #e2e8f0; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 0 32px; 
+    }
+    
+    .topbar-title { 
+      font-size: 20px; 
+      font-weight: 800; 
+      color: #0f172a; 
+    }
+    
+    .topbar-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      background: #ffffff;
+      padding: 6px 8px 6px 16px;
+      border-radius: 999px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--primary-grad);
+      border-radius: 50%;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 800;
+      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+    }
+
+    .main-content { 
+      flex: 1; 
+      width: 100%;
+      padding: 28px 32px; 
+      overflow-y: auto; 
+      display: flex; 
+      flex-direction: column; 
+    }
+    
+    #vista-dashboard {
+      width: 100%;
+    }
+
+    .dashboard-grid { 
+      width: 100%;
+      display: grid; 
+      grid-template-columns: repeat(2, 1fr); 
+      gap: 22px; 
+      margin-bottom: 22px;
+    }
+    
+    .dash-card { 
+      width: 100%;
+      background: #ffffff; 
+      border: 1px solid #e2e8f0; 
+      border-radius: var(--radius-lg); 
+      padding: 24px;
+      box-shadow: var(--shadow-relief);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dash-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--primary-grad);
+    }
+    
+    .dash-value { 
+      font-size: 36px; 
+      font-weight: 900; 
+      background: var(--primary-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 10px 0 0 0; 
+    }
+    
+    .table-container { 
+      width: 100%;
+      background-color: #ffffff; 
+      border-radius: var(--radius-lg); 
+      border: 1px solid #e2e8f0; 
+      padding: 24px; 
+      box-shadow: var(--shadow-relief);
+      display: none; 
+      flex-direction: column;
+      overflow-x: auto;
+    }
+
+    .filter-input {
+      padding: 9px 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 13px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      outline: none;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+
+    .filter-input:focus {
+      background: #ffffff;
+      border-color: #3b82f6;
+    }
+    
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      text-align: left; 
+      margin-top: 15px; 
+    }
+    
+    th { 
+      background-color: #f8fafc; 
+      color: #64748b; 
+      padding: 14px 18px; 
+      font-size: 11px; 
+      text-transform: uppercase; 
+      font-weight: 800; 
+      letter-spacing: 0.8px;
+      border-bottom: 2px solid #e2e8f0; 
+      white-space: nowrap;
+    }
+    
+    td { 
+      padding: 14px 16px; 
+      font-size: 13px; 
+      font-weight: 600; 
+      border-bottom: 1px solid #f1f5f9; 
+    }
+
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    /* MATRIZ DE ASISTENCIA MENSUAL */
+    .asis-matrix-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      margin-top: 16px;
+    }
+
+    .asis-matrix {
+      margin-top: 0;
+      border-collapse: collapse;
+      width: max-content;
+      min-width: 100%;
+    }
+
+    .asis-matrix th, .asis-matrix td {
+      padding: 10px 8px;
+      text-align: center;
+      border-right: 1px solid #f1f5f9;
+    }
+
+    .asis-matrix th.col-sticky,
+    .asis-matrix td.col-sticky {
+      position: sticky;
+      left: 0;
+      background: #ffffff;
+      z-index: 2;
+      text-align: left;
+      padding: 10px 14px;
+      min-width: 230px;
+      border-right: 2px solid #e2e8f0;
+    }
+
+    .asis-matrix th.col-sticky {
+      background: #f8fafc;
+      z-index: 3;
+    }
+
+    .asis-select {
+      width: 68px;
+      padding: 6px 4px;
+      border-radius: 8px;
+      border: 1.5px solid #cbd5e1;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      text-align: center;
+      cursor: pointer;
+      outline: none;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+
+    .asis-select:disabled {
+      opacity: 0.85;
+      cursor: not-allowed;
+    }
+
+    .asis-A { background: #dcfce7 !important; color: #15803d !important; border-color: #86efac !important; }
+    .asis-T { background: #fef9c3 !important; color: #854d0e !important; border-color: #fde047 !important; }
+    .asis-F { background: #ffe4e6 !important; color: #be123c !important; border-color: #fda4af !important; }
+    .asis-Justificado { background: #e0f2fe !important; color: #0369a1 !important; border-color: #7dd3fc !important; }
+
+    .motivo-tag {
+      display: block;
+      font-size: 10px;
+      color: #0369a1;
+      max-width: 72px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin: 3px auto 0;
+      cursor: help;
+    }
+    
+    .badge-activo { 
+      padding: 5px 12px; 
+      border-radius: 999px; 
+      font-size: 11px; 
+      font-weight: 800; 
+      background: #dcfce7; 
+      color: #15803d; 
+      text-transform: uppercase;
+    }
+
+    .badge-falta {
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      background: #ffe4e6;
+      color: #be123c;
+      text-transform: uppercase;
+    }
+    
+    .btn-action { 
+      padding: 9px 16px; 
+      font-size: 12px; 
+      border-radius: 10px; 
+      border: none; 
+      font-weight: 700; 
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer; 
+      background: var(--primary-grad); 
+      color: #ffffff;
+      box-shadow: 0 6px 14px -4px rgba(59, 130, 246, 0.45);
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-action:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-excel {
+      background: var(--accent-grad);
+      box-shadow: 0 6px 14px -4px rgba(16, 185, 129, 0.45);
+    }
+
+    .btn-dark {
+      background: linear-gradient(135deg, #334155, #0f172a);
+      box-shadow: 0 6px 14px -4px rgba(15, 23, 42, 0.35);
+    }
+    
+    .modal-overlay { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(6px);
+      display: none; 
+      justify-content: center; 
+      align-items: center; 
+      z-index: 1000; 
+    }
+    
+    .modal-box { 
+      width: 90%; 
+      max-width: 820px; 
+      height: 85vh;
+      background: #ffffff; 
+      border-radius: 24px; 
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden; 
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.3);
+      border: 1px solid #e2e8f0;
+    }
+
+    .modal-box.compact {
+      max-width: 540px;
+      height: auto;
+      max-height: 90vh;
+    }
+
+    .modal-box.dark-mode { 
+      background: #0f172a; 
+      max-width: 1100px; 
+      border: 1px solid rgba(255,255,255,0.12); 
+    }
+    
+    .modal-header { 
+      padding: 18px 24px; 
+      background: var(--primary-grad); 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+    
+    .modal-title { 
+      margin: 0; 
+      color: #ffffff; 
+      font-size: 15px; 
+      font-weight: 800; 
+      text-transform: uppercase; 
+    }
+    
+    .modal-content-area { 
+      flex: 1; 
+      overflow-y: auto; 
+      padding: 22px; 
+      background: #f8fafc;
+      height: 100%;
+    }
+
+    .modal-box.dark-mode .modal-content-area { 
+      padding: 0; 
+      background: #000000; 
+      overflow: hidden; 
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      background: #ffffff;
+      outline: none;
+    }
+    
+    .eval-row { 
+      background: #ffffff; 
+      border: 1px solid #e2e8f0; 
+      border-radius: 14px; 
+      padding: 16px; 
+      margin-bottom: 14px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    }
+    
+    .correct { 
+      background: #dcfce7; 
+      color: #15803d; 
+      padding: 5px 10px; 
+      border-radius: 8px; 
+      font-size: 12px;
+      font-weight: 700;
+    }
+    
+    .incorrect { 
+      background: #ffe4e6; 
+      color: #be123c; 
+      padding: 5px 10px; 
+      border-radius: 8px; 
+      font-size: 12px;
+      font-weight: 700;
+    }
+    
+    .feedback-box { 
+      background: #ffffff; 
+      padding: 20px 24px; 
+      border-top: 2px solid #e0f2fe; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 10px; 
+    }
+    
+    .feedback-box textarea { 
+      width: 100%; 
+      padding: 12px; 
+      border: 1.5px solid #e2e8f0; 
+      border-radius: 12px; 
+      resize: none; 
+      font-family: 'Outfit', sans-serif; 
+      outline: none; 
+      box-sizing: border-box;
+      background: #f8fafc;
+    }
+
+    .feedback-box textarea:focus {
+      background: #ffffff;
+      border-color: #3b82f6;
+    }
+
+    /* MATERIALES TARJETAS FUTURISTAS BLANCAS CON RELIEVE */
+    .materiales-grid { 
+      width: 100%;
+      display: none; 
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+      gap: 26px; 
+      padding-bottom: 40px; 
+    }
+    
+    .card { 
+      background: #ffffff; 
+      border-radius: 22px; 
+      border: 1px solid #e2e8f0; 
+      box-shadow: var(--shadow-relief); 
+      overflow: hidden; 
+      display: flex; 
+      flex-direction: column; 
+      transition: all 0.3s ease; 
+    }
+    
+    .card:hover { 
+      transform: translateY(-8px); 
+      border-color: #3b82f6; 
+      box-shadow: 0 22px 40px -10px rgba(59, 130, 246, 0.25); 
+    }
+    
+    .card-preview { 
+      height: 165px; 
+      background: linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%); 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      position: relative; 
+      overflow: hidden; 
+    }
+    
+    .tech-pattern { 
+      position: absolute; 
+      top: 0; left: 0; right: 0; bottom: 0; 
+      background-image: linear-gradient(rgba(59, 130, 246, 0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.12) 1px, transparent 1px); 
+      background-size: 20px 20px; 
+      z-index: 1; 
+    }
+    
+    .preview-icon { 
+      width: 62px; 
+      height: 62px; 
+      fill: #2563eb; 
+      z-index: 4; 
+      filter: drop-shadow(0 8px 16px rgba(59, 130, 246, 0.35)); 
+    }
+    
+    .card-preview img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      z-index: 3; 
+    }
+    
+    .play-icon { 
+      position: absolute; 
+      width: 56px; 
+      height: 56px; 
+      background: var(--primary-grad); 
+      border-radius: 50%; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      color: #ffffff; 
+      font-size: 20px; 
+      padding-left: 4px; 
+      z-index: 5;
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.55);
+    }
+    
+    .card-body { 
+      padding: 20px 22px; 
+      flex: 1; 
+      display: flex; 
+      flex-direction: column; 
+      background: #ffffff; 
+    }
+    
+    .card-title { 
+      margin: 0 0 8px 0; 
+      font-size: 16px; 
+      font-weight: 800; 
+      color: #0f172a; 
+      text-transform: uppercase; 
+    }
+    
+    .card-desc { 
+      margin: 0; 
+      font-size: 13px; 
+      color: #64748b; 
+      display: -webkit-box; 
+      -webkit-line-clamp: 3; 
+      -webkit-box-orient: vertical; 
+      overflow: hidden; 
+    }
+    
+    .card-footer { 
+      padding: 0 22px 22px; 
+      background: #ffffff; 
+    }
+    
+    .btn-ver { 
+      width: 100%; 
+      padding: 12px; 
+      border: none; 
+      border-radius: 12px; 
+      background: var(--primary-grad); 
+      color: #ffffff; 
+      font-weight: 800; 
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: 0.6px;
+      cursor: pointer; 
+      box-shadow: 0 8px 18px -5px rgba(59, 130, 246, 0.45);
+      transition: 0.25s; 
+    }
+    
+    .btn-ver:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -5px rgba(99, 102, 241, 0.6); 
+    }
+    
+    .watermark {
+      position: fixed; 
+      bottom: 10px; 
+      right: 16px; 
+      font-size: 11px; 
+      color: #94a3b8; 
+      font-weight: 700; 
+      z-index: 9999; 
+      letter-spacing: 0.6px; 
+      text-transform: uppercase;
+    }
+    .form-group textarea { width:100%; padding:10px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-family:'Outfit',sans-serif; font-weight:600; background:#fff; outline:none; resize:vertical; }
+    .sup-head { display:flex; justify-content:space-between; align-items:center; margin:22px 0 4px; padding:10px 14px; background:#eff6ff; border-radius:12px; font-weight:800; color:#1e3a8a; }
+    .crit-row { display:grid; grid-template-columns:1fr 110px; gap:10px; align-items:center; padding:8px 0; border-bottom:1px solid #f1f5f9; font-weight:600; font-size:14px; }
+    .crit-row input { text-align:center; }
+    .file-box { border:2px dashed #93c5fd; border-radius:14px; padding:14px; background:#f8fbff; }
+    .file-item { display:flex; align-items:center; gap:10px; padding:6px 0; font-size:13px; font-weight:600; }
+    .file-item img { width:46px; height:46px; object-fit:cover; border-radius:8px; }
+    .file-item button { margin-left:auto; border:none; background:#ffe4e6; color:#be123c; border-radius:8px; cursor:pointer; font-weight:800; padding:4px 9px; }
+    .badge-medio { padding:5px 12px; border-radius:999px; font-size:11px; font-weight:800; background:#fef3c7; color:#b45309; }
+    .img-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; }
+    .img-grid img { width:100%; height:130px; object-fit:cover; border-radius:10px; border:1px solid #e2e8f0; }
+    .warn { background:#fff7ed; border:1px solid #fdba74; color:#9a3412; padding:12px 16px; border-radius:12px; font-weight:600; font-size:13px; margin-bottom:14px; }
+    .item-row { display:grid; grid-template-columns:44px 1fr 64px 150px; gap:10px; align-items:center; padding:9px 4px; border-bottom:1px solid #f1f5f9; font-size:14px; font-weight:600; }
+    .item-row .code { font-weight:900; color:#2563eb; }
+    .item-row .peso { font-size:12px; color:#64748b; text-align:right; }
+    .opts { display:flex; gap:8px; justify-content:flex-end; }
+    .opt { cursor:pointer; padding:6px 16px; border-radius:999px; border:1.5px solid #e2e8f0; font-weight:800; font-size:12px; background:#fff; color:#64748b; user-select:none; }
+    .opt input { display:none; }
+    .opt.si.on { background:#dcfce7; border-color:#22c55e; color:#15803d; }
+    .opt.no.on { background:#ffe4e6; border-color:#f43f5e; color:#be123c; }
+    .bloque { margin:18px 0 2px; padding:8px 14px; background:#eff6ff; border-radius:10px; font-weight:800; color:#1e3a8a; display:flex; justify-content:space-between; }
+    .resultado { display:flex; gap:26px; flex-wrap:wrap; align-items:center; justify-content:flex-end; margin-top:16px; padding:16px 20px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; }
+    .resultado .big { font-size:28px; font-weight:900; color:#2563eb; }
+    .resultado small { display:block; color:#64748b; font-weight:700; font-size:11px; letter-spacing:.5px; }
+    #vista-evaluar { padding-bottom: 120px; }
+    #flotante { position:fixed; right:26px; bottom:22px; z-index:900; display:none; align-items:center; gap:18px; background:#0f172a; color:#fff; padding:8px 18px; border-radius:16px; opacity:.97; box-shadow:0 12px 30px rgba(15,23,42,.35); font-weight:700; }
+    #flotante small { display:block; font-size:10px; letter-spacing:.6px; color:#94a3b8; font-weight:700; }
+    #flotante .v { font-size:20px; font-weight:900; line-height:1.1; }
+    .badge-gris { padding:5px 12px; border-radius:999px; font-size:11px; font-weight:800; background:#e2e8f0; color:#475569; }
+    .bloque .sc { font-weight:900; color:#2563eb; }
+    #loader { position:fixed; inset:0; background:rgba(15,23,42,.55); display:none; align-items:center; justify-content:center; z-index:3000; color:#fff; font-weight:800; font-size:16px; }
+    #toast { position:fixed; bottom:24px; right:24px; background:#0f172a; color:#fff; padding:12px 20px; border-radius:12px; font-weight:700; display:none; z-index:3100; }
+  </style>
+</head>
+<body>
+  <div class="watermark">Desarrollado por Jonatan Santiago Guerrero</div>
+
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <svg width="42" height="34" viewBox="0 0 120 96" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+        <path d="M40 16L14 48L40 80" stroke="#38D394" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M80 16L106 48L80 80" stroke="#38D394" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="60" y="29" width="27" height="27" transform="rotate(45 60 29)" fill="#000000"/>
+      </svg>
+      <div class="brand-text"><h2>martec</h2><span>Portal Calidad</span></div>
+    </div>
+    <ul class="menu">
+      <li id="tab-asesores" class="active" onclick="switchTab('Asesores')">👥 Mis Asesores</li>
+      <li id="tab-evaluar" onclick="switchTab('Evaluar')">🎧 Nueva Evaluación</li>
+      <li id="tab-historial" onclick="switchTab('Historial')">🗂️ Historial</li>
+      <li class="menu-logout" onclick="localStorage.removeItem('martec_user'); window.location.href='index.html'">🚪 Cerrar Sesión</li>
+    </ul>
+  </div>
+
+  <div class="main-wrapper">
+    <div class="topbar">
+      <div class="topbar-title" id="titulo-seccion">Mis Asesores</div>
+      <div class="topbar-user"><span id="nombre-calidad">Cargando...</span><div class="avatar">C</div></div>
+    </div>
+
+    <div class="main-content">
+      <div id="aviso-hoja" class="warn" style="display:none;">
+        <div>⚠️ No se encontró la hoja <b>Calidad</b> en el Excel de Google, por eso aún no se pueden guardar evaluaciones.</div>
+        <div style="margin-top:6px; font-weight:500;">Crea una pestaña llamada exactamente <b>Calidad</b>, haz clic en la celda <b>A1</b>, pega los encabezados y recarga esta página.</div>
+        <button class="btn-action" style="margin-top:10px; padding:7px 14px; font-size:12px;" onclick="copiarEncabezados()">📋 Copiar encabezados</button>
+      </div>
+
+      <!-- MIS ASESORES -->
+      <div class="table-container" id="vista-asesores" style="display:flex;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h3 style="margin:0; font-weight:800;">Asesores asignados</h3>
+            <div style="font-size:12px; color:#64748b; font-weight:600; margin-top:2px;" id="resumen-asesores"></div>
+          </div>
+          <input type="text" id="busq-asesor" class="filter-input" placeholder="🔍 Buscar asesor o DNI..." onkeyup="renderizarAsesores()">
+        </div>
+        <div id="asesores-container"></div>
+      </div>
+
+      <!-- NUEVA EVALUACIÓN -->
+      <div class="table-container" id="vista-evaluar">
+        <h3 style="margin:0; font-weight:800;">Detalle de escucha por ítem</h3>
+        <div style="font-size:12px; color:#64748b; font-weight:600; margin:2px 0 16px;">Marca SI/NO en cada ítem al escuchar la llamada. La nota se va calculando desde el primer ítem; la calificación final aparece al marcar los 18.</div>
+        <div class="form-grid">
+          <div class="form-group"><label>Fecha</label><input type="date" id="ev-fecha"></div>
+          <div class="form-group"><label>IDC</label><input type="text" id="ev-idc" placeholder="ID de la llamada / cliente"></div>
+          <div class="form-group"><label>Asesor</label><select id="ev-asesor" onchange="mostrarSupervisor()"></select></div>
+          <div class="form-group"><label>Supervisor</label><input type="text" id="ev-sup" readonly style="background:#e2e8f0;"></div>
+          <div class="form-group"><label>Tipo de gestión</label>
+            <select id="ev-tipo"><option value="">-- Seleccione --</option></select></div>
+          <div class="form-group"><label>Celular del cliente gestionado <span style="color:#94a3b8; font-weight:600;">(opcional)</span></label>
+            <input type="tel" id="ev-cel" inputmode="numeric" maxlength="15" placeholder="Ej. 987654321" oninput="this.value=this.value.replace(/\D/g,'')"></div>
+        </div>
+
+        <div id="ev-items"></div>
+
+        <div class="resultado">
+          <div><small>ÍTEMS MARCADOS</small><span class="big" id="r-marcados" style="font-size:22px;">0/18</span></div>
+          <div><small>PUNTAJE ACUMULADO</small><span class="big" id="r-puntaje">0%</span></div>
+          <div><small>NOTA ACTUAL (0-20)</small><span class="big" id="r-nota">0</span></div>
+          <div><small>CALIFICACIÓN</small><span id="r-calif" class="badge-gris">En curso</span></div>
+        </div>
+
+        <div class="form-group" style="margin-top:16px;"><label>Observaciones (PDP/TAT)</label><textarea id="ev-obs" rows="3"></textarea></div>
+        <div class="form-group" style="margin-top:12px;"><label>FEEDBACK</label><textarea id="ev-feedback" rows="3" placeholder="Retroalimentación para el asesor..."></textarea></div>
+
+        <h4 style="margin:18px 0 8px; font-weight:800;">Evidencias</h4>
+        <div class="form-grid">
+          <div class="file-box">
+            <label style="font-weight:800; color:#2563eb; font-size:13px;">🎧 Audios (uno o varios)</label>
+            <input type="file" id="in-audio" accept="audio/*" multiple style="margin-top:8px; width:100%;">
+            <div id="lista-audio"></div>
+          </div>
+          <div class="file-box">
+            <label style="font-weight:800; color:#2563eb; font-size:13px;">🖼️ Capturas de WhatsApp (varias)</label>
+            <input type="file" id="in-img" accept="image/*" multiple style="margin-top:8px; width:100%;">
+            <div id="lista-img"></div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:22px;">
+          <button class="btn-action btn-dark" onclick="limpiarFormulario()">Limpiar</button>
+          <button class="btn-action" id="btn-guardar-eval" onclick="guardarEvaluacion()">💾 Guardar Evaluación</button>
+        </div>
+      </div>
+
+      <!-- HISTORIAL -->
+      <div class="table-container" id="vista-historial">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <h3 style="margin:0; font-weight:800;">Evaluaciones realizadas</h3>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <select id="his-sup" class="filter-input" onchange="renderizarHistorial()"></select>
+            <input type="text" id="his-busq" class="filter-input" placeholder="🔍 Buscar asesor..." onkeyup="renderizarHistorial()">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#475569;">Desde <input type="date" id="his-desde" class="filter-input" onchange="renderizarHistorial()"></label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#475569;">Hasta <input type="date" id="his-hasta" class="filter-input" onchange="renderizarHistorial()"></label>
+            <button class="btn-action btn-dark" style="padding:8px 14px; font-size:12px;" onclick="limpiarFiltrosHistorial()">✕ Limpiar</button>
+            <button class="btn-action btn-excel" onclick="exportarExcelCalidad()">📥 Descargar Excel</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Fecha</th><th>IDC</th><th>Asesor</th><th>Supervisor</th><th>Tipo de gestión</th><th style="text-align:center;">Nota /20</th><th>Calificación</th><th>Evidencias</th><th style="text-align:right;">Detalle</th></tr></thead>
+          <tbody id="body-historial"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DETALLE -->
+  <div class="modal-overlay" id="modal-detalle">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" id="det-titulo">Detalle</h3>
+        <button style="background:none; border:none; color:white; font-size:20px; cursor:pointer;" onclick="document.getElementById('modal-detalle').style.display='none'">✕</button>
+      </div>
+      <div class="modal-content-area" id="det-contenido"></div>
+    </div>
+  </div>
+
+  <div id="flotante">
+    <div><small>NOTA ACTUAL /20</small><span class="v" id="f-nota">0</span></div>
+    <div><small>PUNTAJE</small><span class="v" id="f-punt">0%</span></div>
+    <div><small>MARCADOS</small><span class="v" id="f-marc">0/18</span></div>
+    <div><small>CALIFICACIÓN</small><span id="f-calif" class="badge-gris">En curso</span></div>
+  </div>
+
+  <div id="loader"><div id="loader-msg">Guardando...</div></div>
+  <div id="toast"></div>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxH3ZO17EGbPMU8EG6tv8pijwRz8o8py9DmyzkOG9Nrx6DPaZn2J-Nv3M0MU7m1GJXd/exec';
+    const CLOUD_NAME = 'x2osfglh';
+    const UPLOAD_PRESET = 'martec_materiales';
+    const CLOUD_FOLDER = 'calidad';
+
+    // Formato oficial: hoja MONITOREO (18 ítems SI/NO con peso). Los pesos suman 100%.
+    const ITEMS = [
+      ['1.1', 'Consulta con nombre y apellidos del titular', 3/70],
+      ['1.2', 'Menciona la empresa que representa', 3/70],
+      ['1.3', 'Indica su nombre y apellido', 3/70],
+      ['1.4', 'Motivo de llamada y datos de la deuda', 3/70],
+      ['2.1', 'Motivo de no pago', 3/70],
+      ['2.2', 'Situación económica actual', 3/70],
+      ['2.3', 'Solicita sustento de pago', 3/70],
+      ['3.1', 'Transmite la urgencia de pago', 0.10],
+      ['3.2', 'Ofrece facilidades de pago escalonada', 0.10],
+      ['3.3', 'Manejo de objeciones', 0.10],
+      ['3.4', 'Transmite consecuencias', 0.10],
+      ['3.5', 'Transmite beneficios', 0.10],
+      ['4.1', 'Reafirma acuerdo de pago (o parafrasea si no hay acuerdo)', 0.04],
+      ['4.2', 'Indica lugares de pago y horarios', 0.02],
+      ['4.3', 'Actualiza datos del cliente', 0.02],
+      ['4.4', 'Despedida', 0.02],
+      ['5.1', 'Autocontrol - Empatia', 0.05],
+      ['5.2', 'Tipificación', 0.05]
+    ];
+    const BLOQUES = { '1': 'SALUDO', '2': 'SONDEO', '3': 'NEGOCIACION', '4': 'HABILIDAD DE NEGOCIACION', '5': 'HABILIDADES' };
+    const TIPOS_GESTION = ['TRATAMIENTO TITULAR', 'VOLVER A LLAMAR', 'CLIENTE POSIBLE NEGOCIACION', 'PDP CAMPAÑA', 'PDP EXCEPCION', 'PDP MULTIPLES DESC', 'PDP MULTIPLES DESC - EXCEPCION'];
+    const calificar = p => p >= 0.85 ? 'Excelente' : (p >= 0.70 ? 'Cumple' : 'Refuerzo inmediato');
+    const clsCalif = c => c === 'Excelente' ? 'badge-activo' : (c === 'Cumple' ? 'badge-medio' : 'badge-falta');
+
+    let perfil = null, supsAsignados = [], asesores = [], evaluaciones = [];
+    let audios = [], imagenes = [], guardando = false, hojaOk = false;
+
+    const norm = s => (s || '').toString().trim().toLowerCase();
+    const esc = s => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const num = v => { const n = parseFloat((v || '').toString().replace(',', '.')); return isNaN(n) ? 0 : n; };
+    const post = body => fetch(API_URL, { method: 'POST', body: JSON.stringify(body) }).then(r => r.json());
+    const toast = (m) => { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3500); };
+    const loader = (m) => { document.getElementById('loader').style.display = m ? 'flex' : 'none'; if (m) document.getElementById('loader-msg').innerText = m; };
+
+    window.onload = async () => {
+      const ud = localStorage.getItem('martec_user');
+      if (!ud) return window.location.href = 'index.html';
+      const sesion = JSON.parse(ud);
+      if (norm(sesion.rol) !== 'calidad') return window.location.href = 'index.html';
+
+      document.getElementById('ev-fecha').value = new Date().toISOString().slice(0, 10);
+      construirItems();
+
+      try {
+        const dataU = await post({ action: 'leer', tabla: 'Usuarios' });
+        perfil = (dataU.data || []).find(u => u.DNI == sesion.usuario);
+        if (!perfil || norm(perfil.Rol) !== 'calidad') return window.location.href = 'index.html';
+
+        document.getElementById('nombre-calidad').innerText = 'Calidad ' + ((perfil.Nombres || '').split(' ')[0] || '').toUpperCase();
+        supsAsignados = (perfil.Supervisor || '').split(/[;|]/).map(s => s.trim()).filter(Boolean);
+        const supsNorm = supsAsignados.map(norm);
+        asesores = dataU.data.filter(d => norm(d.Rol) === 'asesor' && norm(d.Estado) !== 'cesado' && supsNorm.includes(norm(d.Supervisor)));
+
+        await cargarEvaluaciones();
+        poblarSelects();
+        renderizarAsesores();
+        renderizarHistorial();
+      } catch (e) {
+        console.error(e);
+        toast('Error de conexión con el servidor.');
+      }
+    };
+
+    async function cargarEvaluaciones() {
+      try {
+        const r = await post({ action: 'leer', tabla: 'Calidad' });
+        if (!r.success) throw new Error(r.message);
+        const dnis = asesores.map(a => a.DNI.toString());
+        evaluaciones = (r.data || []).filter(e => dnis.includes((e['DNI Asesor'] || '').toString()))
+          .sort((a, b) => parseInt((b.ID || '').replace(/\D/g, '') || 0) - parseInt((a.ID || '').replace(/\D/g, '') || 0));
+        hojaOk = true;
+        document.getElementById('aviso-hoja').style.display = 'none';
+      } catch (e) {
+        evaluaciones = [];
+        hojaOk = false;
+        document.getElementById('aviso-hoja').style.display = 'block';
+      }
+    }
+
+    const ENCABEZADOS = ['ID', 'Fecha', 'IDC', 'DNI Asesor', 'Asesor', 'Supervisor', 'Tipo de gestion', ...ITEMS.map(i => 'Item ' + i[0]),
+      'Puntaje', 'Nota', 'Calificacion', 'Observaciones', 'Feedback', 'DNI Calidad', 'Calidad', 'Audios', 'Imagenes', 'Fecha Registro', 'Celular Cliente'];
+
+    async function copiarEncabezados() {
+      const txt = ENCABEZADOS.join('\t'); // al pegar en A1, Google Sheets los reparte uno por celda
+      try { await navigator.clipboard.writeText(txt); toast('✅ Encabezados copiados. Pégalos en la celda A1 de la hoja Calidad.'); }
+      catch (_) { prompt('Copia este texto (Ctrl+C) y pégalo en A1 de la hoja Calidad:', txt); }
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.menu li').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tab.toLowerCase()).classList.add('active');
+      const tits = { Asesores: 'Mis Asesores', Evaluar: 'Nueva Evaluación de Calidad', Historial: 'Historial de Evaluaciones' };
+      document.getElementById('titulo-seccion').innerText = tits[tab];
+      document.getElementById('flotante').style.display = tab === 'Evaluar' ? 'flex' : 'none';
+      ['asesores', 'evaluar', 'historial'].forEach(v => document.getElementById('vista-' + v).style.display = (tab.toLowerCase() === v) ? 'flex' : 'none');
+    }
+
+    function poblarSelects() {
+      let html = '<option value="">-- Seleccione un asesor --</option>';
+      supsAsignados.forEach(sup => {
+        const lista = asesores.filter(a => norm(a.Supervisor) === norm(sup));
+        if (lista.length) html += `<optgroup label="Sup. ${esc(sup)}">` + lista.map(a => `<option value="${esc(a.DNI)}">${esc(a.Nombres)} (${esc(a.DNI)})</option>`).join('') + '</optgroup>';
+      });
+      document.getElementById('ev-asesor').innerHTML = html;
+      document.getElementById('his-sup').innerHTML = '<option value="">📁 Todos los supervisores</option>' + supsAsignados.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+    }
+
+    function statsAsesor(dni) {
+      const ev = evaluaciones.filter(e => e['DNI Asesor'].toString() === dni.toString());
+      const prom = ev.length ? (ev.reduce((s, e) => s + num(e.Nota), 0) / ev.length) : null;
+      return { n: ev.length, prom, ultima: ev[0] ? ev[0].Fecha : '-' };
+    }
+
+    function badgeNota(n) {
+      const c = calificar(n / 20);
+      return `<span class="${clsCalif(c)}">${Math.round(n * 10) / 10}</span>`;
+    }
+
+    function renderizarAsesores() {
+      const q = norm(document.getElementById('busq-asesor').value);
+      document.getElementById('resumen-asesores').innerText = `${asesores.length} asesores en ${supsAsignados.length} supervisor(es)`;
+      const cont = document.getElementById('asesores-container');
+      if (supsAsignados.length === 0) { cont.innerHTML = '<p style="color:#be123c; font-weight:700;">No tienes supervisores asignados. Contacta al administrador o líder.</p>'; return; }
+      cont.innerHTML = supsAsignados.map(sup => {
+        const lista = asesores.filter(a => norm(a.Supervisor) === norm(sup) && (!q || norm(a.Nombres).includes(q) || a.DNI.toString().includes(q)));
+        const filas = lista.length ? lista.map(a => {
+          const st = statsAsesor(a.DNI);
+          const badge = norm(a.Estado) === 'activo' ? 'badge-activo' : 'badge-falta';
+          return `<tr>
+            <td style="font-family:monospace;">${esc(a.DNI)}</td><td>${esc(a.Nombres)}</td><td>${esc(a.Telefono) || '-'}</td>
+            <td><span class="${badge}">${esc(a.Estado)}</span></td>
+            <td style="text-align:center;">${st.n}</td><td style="text-align:center;">${st.prom === null ? '-' : badgeNota(st.prom)}</td><td>${esc(st.ultima)}</td>
+            <td style="text-align:right;"><button class="btn-action" style="padding:6px 12px; font-size:11px;" onclick="evaluarAsesor('${esc(a.DNI)}')">🎧 Evaluar</button></td>
+          </tr>`;
+        }).join('') : '<tr><td colspan="8" style="text-align:center; color:#64748b; font-weight:600;">Sin asesores.</td></tr>';
+        return `<div class="sup-head"><span>👤 Supervisor: ${esc(sup)}</span><span>${lista.length} asesor(es)</span></div>
+          <table><thead><tr><th>DNI</th><th>Nombres</th><th>Teléfono</th><th>Estado</th><th style="text-align:center;">Eval.</th><th style="text-align:center;">Prom. /20</th><th>Última</th><th></th></tr></thead><tbody>${filas}</tbody></table>`;
+      }).join('');
+    }
+
+    function evaluarAsesor(dni) { switchTab('Evaluar'); document.getElementById('ev-asesor').value = dni; }
+
+    /* ---------- Formulario ---------- */
+    function construirItems() {
+      let html = '', bloque = '';
+      ITEMS.forEach(([id, txt, peso]) => {
+        if (id[0] !== bloque) {
+          bloque = id[0];
+          const tot = ITEMS.filter(i => i[0][0] === bloque).reduce((a, i) => a + i[2], 0);
+          html += `<div class="bloque"><span>BLOQUE ${bloque} · ${BLOQUES[bloque]}</span><span><span class="sc" id="bl-${bloque}">0%</span> / ${Math.round(tot * 1000) / 10}%</span></div>`;
+        }
+        html += `<div class="item-row">
+          <div class="code">${id}</div><div>${esc(txt)}</div><div class="peso">${(Math.round(peso * 10000) / 100)}%</div>
+          <div class="opts">
+            <label class="opt si"><input type="radio" name="it-${id}" value="SI" onchange="calcular()">SI</label>
+            <label class="opt no"><input type="radio" name="it-${id}" value="NO" onchange="calcular()">NO</label>
+          </div></div>`;
+      });
+      document.getElementById('ev-items').innerHTML = html;
+      document.getElementById('ev-tipo').innerHTML = '<option value="">-- Seleccione --</option>' + TIPOS_GESTION.map(t => `<option>${t}</option>`).join('');
+    }
+
+    function respuestas() {
+      return ITEMS.map(([id]) => { const r = document.querySelector(`input[name="it-${id}"]:checked`); return r ? r.value : ''; });
+    }
+
+    // Puntaje = suma de pesos de los ítems en SI. Se muestra en vivo desde el primer ítem;
+    // la calificación definitiva solo existe con los 18 marcados (igual que el Excel).
+    function calcular() {
+      const resp = respuestas();
+      document.querySelectorAll('.opt').forEach(l => l.classList.toggle('on', l.querySelector('input').checked));
+      const marcados = resp.filter(Boolean).length;
+      const completo = marcados === ITEMS.length;
+      const p = Math.round(ITEMS.reduce((a, it, i) => a + (resp[i] === 'SI' ? it[2] : 0), 0) * 1e6) / 1e6;
+      const nota = Math.round(p * 20 * 10) / 10;
+      const cal = calificar(p);
+
+      Object.keys(BLOQUES).forEach(b => {
+        const pb = ITEMS.reduce((a, it, i) => a + (it[0][0] === b && resp[i] === 'SI' ? it[2] : 0), 0);
+        const el = document.getElementById('bl-' + b); if (el) el.innerText = (Math.round(pb * 1000) / 10) + '%';
+      });
+
+      const pTxt = (Math.round(p * 1000) / 10) + '%';
+      document.getElementById('r-marcados').innerText = `${marcados}/${ITEMS.length}`;
+      document.getElementById('r-puntaje').innerText = pTxt;
+      document.getElementById('r-nota').innerText = nota;
+      document.getElementById('f-marc').innerText = `${marcados}/${ITEMS.length}`;
+      document.getElementById('f-punt').innerText = pTxt;
+      document.getElementById('f-nota').innerText = nota;
+      ['r-calif', 'f-calif'].forEach(id => {
+        const c = document.getElementById(id);
+        c.innerText = completo ? cal : 'En curso';
+        c.className = completo ? clsCalif(cal) : 'badge-gris';
+      });
+      return completo ? { p, nota, cal, resp } : null;
+    }
+
+    function mostrarSupervisor() {
+      const a = asesores.find(x => x.DNI.toString() === document.getElementById('ev-asesor').value);
+      document.getElementById('ev-sup').value = a ? a.Supervisor : '';
+    }
+
+    function agregarArchivos(input, lista, tipo) {
+      Array.from(input.files).forEach(f => {
+        const limite = tipo === 'img' ? 10 : 40;
+        if (f.size > limite * 1024 * 1024) return toast(`"${f.name}" supera ${limite} MB.`);
+        lista.push({ file: f, url: null });
+      });
+      input.value = '';
+      renderizarArchivos();
+    }
+    document.addEventListener('change', e => {
+      if (e.target.id === 'in-audio') agregarArchivos(e.target, audios, 'audio');
+      if (e.target.id === 'in-img') agregarArchivos(e.target, imagenes, 'img');
+    });
+
+    function renderizarArchivos() {
+      document.getElementById('lista-audio').innerHTML = audios.map((a, i) =>
+        `<div class="file-item">🎧 <span>${esc(a.file.name)}</span><button onclick="quitarArchivo('audio',${i})">✕</button></div>`).join('');
+      document.getElementById('lista-img').innerHTML = imagenes.map((a, i) =>
+        `<div class="file-item"><img src="${URL.createObjectURL(a.file)}"><span>${esc(a.file.name)}</span><button onclick="quitarArchivo('img',${i})">✕</button></div>`).join('');
+    }
+    function quitarArchivo(tipo, i) { (tipo === 'audio' ? audios : imagenes).splice(i, 1); renderizarArchivos(); }
+
+    function limpiarFormulario() {
+      document.getElementById('ev-asesor').value = '';
+      document.getElementById('ev-idc').value = '';
+      document.getElementById('ev-tipo').value = '';
+      document.getElementById('ev-cel').value = '';
+      document.getElementById('ev-obs').value = '';
+      document.getElementById('ev-feedback').value = '';
+      document.getElementById('ev-fecha').value = new Date().toISOString().slice(0, 10);
+      document.querySelectorAll('#ev-items input').forEach(i => i.checked = false);
+      mostrarSupervisor(); audios = []; imagenes = []; renderizarArchivos(); calcular();
+    }
+
+    async function subirCloudinary(item) {
+      if (item.url) return item.url;
+      const fd = new FormData();
+      fd.append('file', item.file);
+      fd.append('upload_preset', UPLOAD_PRESET);
+      fd.append('folder', CLOUD_FOLDER);
+      const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, { method: 'POST', body: fd });
+      const d = await r.json();
+      if (!r.ok || !d.secure_url) throw new Error(d.error ? d.error.message : 'Error al subir a Cloudinary.');
+      item.url = d.secure_url;
+      return item.url;
+    }
+
+    async function guardarEvaluacion() {
+      if (guardando) return;
+      const asesor = asesores.find(a => a.DNI.toString() === document.getElementById('ev-asesor').value);
+      if (!asesor) return toast('Seleccione un asesor.');
+      const fechaISO = document.getElementById('ev-fecha').value;
+      if (!fechaISO) return toast('Indique la fecha.');
+      if (!document.getElementById('ev-tipo').value) return toast('Seleccione el tipo de gestión.');
+      const cel = document.getElementById('ev-cel').value.trim();
+      if (cel && (cel.length < 7 || cel.length > 15)) return toast('El celular del cliente debe tener entre 7 y 15 dígitos (o déjalo vacío).');
+      const r = calcular();
+      if (!r) return toast('Marca SI/NO en los 18 ítems.');
+
+      if (!hojaOk) await cargarEvaluaciones();
+      if (!hojaOk) return alert('Falta la hoja "Calidad" en el Excel de Google.\n\nCrea una pestaña con ese nombre y pega los encabezados (botón "Copiar encabezados" del aviso naranja). Tu evaluación no se ha perdido: sigue en pantalla.');
+
+      const [y, m, d] = fechaISO.split('-');
+      const ahora = new Date(), pad = n => String(n).padStart(2, '0');
+      guardando = true;
+      const btn = document.getElementById('btn-guardar-eval'); btn.disabled = true;
+      try {
+        const total = audios.length + imagenes.length; let hecho = 0;
+        for (const it of [...audios, ...imagenes]) { loader(`Subiendo evidencias ${++hecho}/${total}...`); await subirCloudinary(it); }
+        loader('Guardando evaluación...');
+        const datos = {
+          ID: 'CAL-' + Date.now(),
+          Fecha: `${d}/${m}/${y}`,
+          IDC: document.getElementById('ev-idc').value.trim(),
+          'DNI Asesor': asesor.DNI, Asesor: asesor.Nombres, Supervisor: asesor.Supervisor,
+          'Tipo de gestion': document.getElementById('ev-tipo').value,
+          'Celular Cliente': document.getElementById('ev-cel').value.trim(),
+          Puntaje: Math.round(r.p * 1000) / 10, Nota: r.nota, Calificacion: r.cal,
+          Observaciones: document.getElementById('ev-obs').value.trim(),
+          Feedback: document.getElementById('ev-feedback').value.trim(),
+          'DNI Calidad': perfil.DNI, Calidad: perfil.Nombres,
+          Audios: audios.map(a => a.url).join(' | '), Imagenes: imagenes.map(a => a.url).join(' | '),
+          'Fecha Registro': `${pad(ahora.getDate())}/${pad(ahora.getMonth() + 1)}/${ahora.getFullYear()} ${pad(ahora.getHours())}:${pad(ahora.getMinutes())}`
+        };
+        ITEMS.forEach(([id], i) => datos['Item ' + id] = r.resp[i]);
+        const res = await post({ action: 'guardar', tabla: 'Calidad', datos });
+        if (!res.success) throw new Error(res.message);
+        loader(null); toast('✅ Evaluación guardada');
+        limpiarFormulario(); await cargarEvaluaciones(); renderizarAsesores(); renderizarHistorial(); switchTab('Historial');
+      } catch (e) {
+        loader(null);
+        const msg = (e.message || '').includes('getDataRange') ? 'La hoja "Calidad" no existe en el Excel de Google.' : (e.message || 'No se pudo guardar.');
+        alert('❌ ' + msg + '\n\nSi ya se subieron archivos no se pierden: puedes volver a intentar.');
+      } finally { guardando = false; btn.disabled = false; }
+    }
+
+    /* ---------- Historial ---------- */
+    const urls = s => (s || '').split('|').map(x => x.trim()).filter(Boolean);
+
+    // dd/mm/yyyy (o yyyy-mm-dd) -> 'yyyy-mm-dd' para comparar con el calendario
+    function fechaISO(f) {
+      const t = (f || '').toString().trim();
+      if (/^\d{4}-\d{2}-\d{2}/.test(t)) return t.slice(0, 10);
+      const p = t.split(/[\/\-]/);
+      if (p.length !== 3) return '';
+      const y = p[2].length === 2 ? '20' + p[2] : p[2];
+      return `${y}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}`;
+    }
+
+    function filtrarHistorial() {
+      const sup = document.getElementById('his-sup').value;
+      const q = norm(document.getElementById('his-busq').value);
+      const desde = document.getElementById('his-desde').value;
+      const hasta = document.getElementById('his-hasta').value;
+      return evaluaciones.filter(e => {
+        const f = fechaISO(e.Fecha);
+        return (!sup || norm(e.Supervisor) === norm(sup))
+          && (!q || norm(e.Asesor).includes(q) || (e['DNI Asesor'] || '').includes(q))
+          && (!desde || (f && f >= desde))
+          && (!hasta || (f && f <= hasta));
+      });
+    }
+
+    function limpiarFiltrosHistorial() {
+      ['his-sup', 'his-busq', 'his-desde', 'his-hasta'].forEach(id => document.getElementById(id).value = '');
+      renderizarHistorial();
+    }
+
+    function renderizarHistorial() {
+      const lista = filtrarHistorial();
+      document.getElementById('body-historial').innerHTML = lista.length ? lista.map(e => `<tr>
+        <td>${esc(e.Fecha)}</td><td>${esc(e.IDC)}</td><td>${esc(e.Asesor)}</td><td>${esc(e.Supervisor)}</td><td style="font-size:12px;">${esc(e['Tipo de gestion'])}</td>
+        <td style="text-align:center;">${badgeNota(num(e.Nota))}</td><td><span class="${clsCalif(e.Calificacion)}">${esc(e.Calificacion)}</span></td>
+        <td>🎧 ${urls(e.Audios).length} &nbsp; 🖼️ ${urls(e.Imagenes).length}</td>
+        <td style="text-align:right;"><button class="btn-action btn-dark" style="padding:6px 12px; font-size:11px;" onclick="verDetalle('${esc(e.ID)}')">👁️ Ver</button></td></tr>`).join('')
+        : '<tr><td colspan="9" style="text-align:center; color:#64748b; font-weight:600; padding:24px;">Sin evaluaciones.</td></tr>';
+    }
+
+    function verDetalle(id) {
+      const e = evaluaciones.find(x => x.ID === id); if (!e) return;
+      const au = urls(e.Audios), im = urls(e.Imagenes);
+      document.getElementById('det-titulo').innerText = `Evaluación - ${e.Asesor}`;
+      document.getElementById('det-contenido').innerHTML = `
+        <div style="display:flex; flex-wrap:wrap; gap:18px; font-size:13px; font-weight:600; margin-bottom:14px;">
+          <div>📅 ${esc(e.Fecha)}</div>${e.IDC ? `<div>🔖 IDC: ${esc(e.IDC)}</div>` : ''}<div>👤 Sup. ${esc(e.Supervisor)}</div>
+          <div>📋 ${esc(e['Tipo de gestion'])}</div>${e['Celular Cliente'] ? `<div>📱 Cliente: ${esc(e['Celular Cliente'])}</div>` : ''}<div>🎧 Evaluó: ${esc(e.Calidad)}</div></div>
+        <div class="resultado" style="justify-content:flex-start; margin:0 0 14px;">
+          <div><small>PUNTAJE</small><span class="big">${esc(e.Puntaje)}%</span></div>
+          <div><small>NOTA (0-20)</small><span class="big">${esc(e.Nota)}</span></div>
+          <div><small>CALIFICACIÓN</small><span class="${clsCalif(e.Calificacion)}">${esc(e.Calificacion)}</span></div></div>
+        <table><thead><tr><th>Ítem</th><th>Detalle</th><th style="text-align:center;">Resultado</th></tr></thead><tbody>
+          ${ITEMS.map(([id, txt]) => { const v = e['Item ' + id]; const cab = id.endsWith('.1') ? `<tr><td colspan="3" style="background:#eff6ff; font-weight:800; color:#1e3a8a;">BLOQUE ${id[0]} · ${BLOQUES[id[0]]}</td></tr>` : ''; return cab + `<tr><td style="font-weight:800; color:#2563eb;">${id}</td><td>${esc(txt)}</td><td style="text-align:center;"><span class="${v === 'SI' ? 'badge-activo' : 'badge-falta'}">${esc(v) || '-'}</span></td></tr>`; }).join('')}
+        </tbody></table>
+        <h4 style="margin:18px 0 6px;">Observaciones (PDP/TAT)</h4>
+        <div style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:12px; white-space:pre-wrap; font-weight:500;">${esc(e.Observaciones) || '-'}</div>
+        <h4 style="margin:18px 0 6px;">Feedback</h4>
+        <div style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:12px; white-space:pre-wrap; font-weight:500;">${esc(e.Feedback) || '-'}</div>
+        ${au.length ? `<h4 style="margin:18px 0 6px;">Audios</h4>` + au.map((u, i) => `<div style="margin-bottom:6px; font-size:12px; font-weight:700;">Audio ${i + 1}</div><audio controls preload="none" src="${esc(u)}" style="width:100%; margin-bottom:10px;"></audio>`).join('') : ''}
+        ${im.length ? `<h4 style="margin:18px 0 6px;">Capturas</h4><div class="img-grid">` + im.map(u => `<a href="${esc(u)}" target="_blank"><img src="${esc(u)}" loading="lazy"></a>`).join('') + '</div>' : ''}`;
+      document.getElementById('modal-detalle').style.display = 'flex';
+    }
+
+    // Descarga idéntica a la hoja MONITOREO: mismos colores, anchos, listas SI/NO, formato condicional y fórmulas
+    async function exportarExcelCalidad() {
+      const sup = document.getElementById('his-sup').value;
+      const lista = filtrarHistorial().slice().reverse(); // cronológico (más antiguas primero)
+      if (!lista.length) return alert('No hay evaluaciones para exportar.');
+      if (typeof ExcelJS === 'undefined') return alert('No se pudo cargar la librería de Excel. Revisa tu conexión e inténtalo de nuevo.');
+
+      const FIN = 393, COL_FIN = 29;
+      const wb = new ExcelJS.Workbook();
+      const ws = wb.addWorksheet('MONITOREO', { views: [{ showGridLines: false, zoomScale: 85 }] });
+      const borde = { style: 'thin', color: { argb: 'FFDCE4F7' } };
+      const bordes = { top: borde, left: borde, bottom: borde, right: borde };
+      const rell = argb => ({ type: 'pattern', pattern: 'solid', fgColor: { argb } });
+
+      // anchos de columna (A..AC)
+      [7.4, 10, 38.9, 14.9, 10, 27.6, 10.8, 10.8, 9.6, 11.8, 9.6, 9.6, 9.6, 9.6, 11.8, 11.2, 9.6, 11.8, 21.7, 14, 11.3, 11.8, 14, 11.8, 13.9, 9, 16.3, 94, 8.9]
+        .forEach((w, i) => ws.getColumn(i + 1).width = w);
+
+      // filas 1-2: título e instrucciones
+      ws.mergeCells('A1:AB1'); ws.mergeCells('A2:AB2'); ws.mergeCells('A4:E4');
+      ws.getCell('A1').value = 'DETALLE DE ESCUCHA POR ÍTEM  CALIDAD - ' + (perfil.Nombres || '').toUpperCase();
+      ws.getCell('A1').font = { name: 'Arial', size: 14, bold: true, color: { argb: 'FF1E2761' } };
+      ws.getCell('A1').alignment = { horizontal: 'left', vertical: 'middle' };
+      ws.getCell('A2').value = "El monitor marca SI/NO en cada ítem al escuchar la llamada (lista desplegable). El Puntaje, la Nota (0-20) y la Calificación se calculan solos una vez marcados los 18 ítems. Pesos de referencia en la fila 4.";
+      ws.getCell('A2').font = { name: 'Arial', size: 9.5, italic: true, color: { argb: 'FF5A6392' } };
+      ws.getCell('A2').alignment = { vertical: 'top', wrapText: true };
+      ws.getRow(1).height = 21.75; ws.getRow(2).height = 27.6; ws.getRow(3).height = 60;
+
+      // fila 3: cabecera
+      const cab = ['Fecha', 'IDC', 'Asesor', 'Celular Cliente', 'Supervisor', 'Tipo de gestion', ...ITEMS.map(i => `${i[0]} ${i[1]}`), 'Puntaje', 'Nota (0-20)', 'Calificación', 'Observaciones (PDP/TAT)', 'FEEDBACK'];
+      cab.forEach((t, i) => {
+        const c = ws.getCell(3, i + 1);
+        c.value = t;
+        c.font = { name: 'Arial', size: i === 28 ? 8 : 9, bold: true, color: { argb: 'FFFFFFFF' } };
+        c.fill = rell('FF1E2761'); c.border = bordes;
+        c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+      });
+
+      // fila 4: pesos
+      ws.getCell('A4').value = 'PESO DEL ÍTEM →';
+      ws.getCell('A4').font = { name: 'Arial', size: 8.5, bold: true, italic: true, color: { argb: 'FF141A47' } };
+      ws.getCell('A4').alignment = { horizontal: 'right', vertical: 'middle' };
+      for (let c = 1; c <= COL_FIN; c++) ws.getCell(4, c).fill = rell('FFCADCFC');
+      ITEMS.forEach((it, i) => {
+        const c = ws.getCell(4, 7 + i);
+        c.value = it[2]; c.numFmt = '0.0%';
+        c.font = { name: 'Arial', size: 8, bold: true, color: { argb: 'FFB8860B' } };
+        c.alignment = { horizontal: 'center', vertical: 'middle' }; c.border = bordes;
+      });
+      ws.getRow(4).height = 13.05;
+
+      // filas 5..393: datos + fórmulas
+      const parseFecha = f => { const m = (f || '').toString().split('/'); return m.length === 3 ? new Date(Date.UTC(+m[2], +m[1] - 1, +m[0])) : (f || null); };
+      for (let r = 5; r <= FIN; r++) {
+        const e = lista[r - 5];
+        ws.getRow(r).height = 13.05;
+        for (let c = 1; c <= COL_FIN; c++) {
+          const cell = ws.getCell(r, c);
+          cell.border = bordes;
+          const dato = c <= 6 || (c >= 7 && c <= 24) || c >= 28;
+          if (dato) cell.fill = rell('FFEDF2FC');
+          if (c >= 7 && c <= 24) { cell.font = { name: 'Calibri', size: 11 }; cell.alignment = { horizontal: 'center', vertical: 'middle' }; }
+          else if (c <= 6) {
+            cell.font = { name: 'Arial', size: 8.7, bold: c === 3, color: { argb: 'FF22284F' } };
+            cell.alignment = { horizontal: c === 3 ? undefined : 'center', vertical: 'middle' };
+          } else if (c >= 28) { cell.font = { name: 'Arial', size: 8.7, color: { argb: 'FF22284F' } }; cell.alignment = { vertical: 'middle', wrapText: true }; }
+        }
+        ws.getCell(r, 1).numFmt = 'd-mmm';
+
+        const fy = `IF(COUNTBLANK(G${r}:X${r})>0,"",SUMPRODUCT($G$4:$X$4,(G${r}:X${r}="SI")*1))`;
+        const py = e ? num(e.Puntaje) / 100 : '';
+        ws.getCell(r, 25).value = { formula: fy, result: e ? py : '' };
+        ws.getCell(r, 26).value = { formula: `IF(Y${r}="","",ROUND(Y${r}*20,1))`, result: e ? num(e.Nota) : '' };
+        ws.getCell(r, 27).value = { formula: `IF(Y${r}="","",IF(Y${r}>=0.85,"Excelente",IF(Y${r}>=0.7,"Cumple","Refuerzo inmediato")))`, result: e ? (e.Calificacion || '') : '' };
+        ws.getCell(r, 25).numFmt = '0.0%'; ws.getCell(r, 26).numFmt = '0.0';
+        ws.getCell(r, 25).font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FF1E2761' } };
+        ws.getCell(r, 26).font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FF22284F' } };
+        ws.getCell(r, 27).font = { name: 'Arial', size: 8.7, bold: true, color: { argb: 'FF22284F' } };
+        [25, 26, 27].forEach(c => ws.getCell(r, c).alignment = { horizontal: 'center', vertical: 'middle' });
+
+        if (e) {
+          ws.getCell(r, 1).value = parseFecha(e.Fecha);
+          ws.getCell(r, 2).value = e.IDC || '';
+          ws.getCell(r, 3).value = e.Asesor || '';
+          ws.getCell(r, 4).value = e['Celular Cliente'] || '';
+          ws.getCell(r, 5).value = e.Supervisor || '';
+          ws.getCell(r, 6).value = e['Tipo de gestion'] || '';
+          ITEMS.forEach((it, i) => ws.getCell(r, 7 + i).value = e['Item ' + it[0]] || null);
+          ws.getCell(r, 28).value = e.Observaciones || '';
+          ws.getCell(r, 29).value = e.Feedback || '';
+        }
+      }
+
+      // lista desplegable SI/NO y formato condicional de la calificación
+      ws.dataValidations.add(`G5:X${FIN}`, { type: 'list', allowBlank: true, formulae: ['"SI,NO"'] });
+      const regla = (txt, fondo, letra) => ({ type: 'cellIs', operator: 'equal', formulae: [`"${txt}"`],
+        style: { font: { bold: true, color: { argb: letra } }, fill: { type: 'pattern', pattern: 'solid', bgColor: { argb: fondo } } } });
+      ws.addConditionalFormatting({ ref: `AA5:AA${FIN}`, rules: [
+        regla('Excelente', 'FFE3F3EC', 'FF1E7A5A'), regla('Cumple', 'FFFFF6E4', 'FFB8860B'), regla('Refuerzo inmediato', 'FFFDF0EE', 'FF7A2E3A')] });
+      ws.autoFilter = { from: 'A3', to: `AC${FIN}` };
+
+      const buf = await wb.xlsx.writeBuffer();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+      a.download = `Monitoreo_Calidad_${(sup || 'TODOS').replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      document.body.appendChild(a); a.click(); a.remove();
+    }
+  </script>
+</body>
+</html>
