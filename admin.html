@@ -1771,11 +1771,12 @@
           </div>
           <div class="form-group">
             <label>Rol</label>
-            <select id="frm-Rol">
+            <select id="frm-Rol" onchange="toggleCalidadSups()">
               <option value="Postulante">Postulante</option>
               <option value="Asesor">Asesor</option>
               <option value="Supervisor">Supervisor</option>
               <option value="Lider">Líder</option>
+              <option value="Calidad">Calidad</option>
               <option value="Administrador">Administrador</option>
             </select>
           </div>
@@ -1801,9 +1802,15 @@
             <label>Fecha Pase a Supervisor</label>
             <input type="date" id="frm-Fecha Asignacion">
           </div>
-          <div class="form-group full-width">
+          <div class="form-group full-width" id="grp-sup-normal">
             <label>Supervisor / Líder Asignado</label>
             <select id="frm-Supervisor">${supOptionsHTML}</select>
+          </div>
+          <div class="form-group full-width" id="grp-sup-calidad" style="display:none;">
+            <label style="color:#2563eb;">🎧 Supervisores asignados al usuario de Calidad (puede marcar varios)</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; max-height:160px; overflow-y:auto; padding:10px; border:1.5px solid #e2e8f0; border-radius:12px; background:#fff;">
+              ${sups.length ? sups.map(s => `<label style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:13px; margin:0; cursor:pointer;"><input type="checkbox" class="chk-cal-sup" value="${s}" style="width:auto;"> ${s}</label>`).join('') : '<span style="color:#64748b; font-size:13px;">No hay supervisores activos.</span>'}
+            </div>
           </div>
         `;
       } else if (tablaActual === 'Corporativos') {
@@ -1901,6 +1908,23 @@
               }
           }); 
       }
+      if (tablaActual === 'Usuarios') initCalidadSups(datosEditar);
+    }
+
+    function toggleCalidadSups() {
+      const rol = document.getElementById('frm-Rol');
+      const esCal = rol && rol.value === 'Calidad';
+      const a = document.getElementById('grp-sup-normal'), b = document.getElementById('grp-sup-calidad');
+      if (a) a.style.display = esCal ? 'none' : '';
+      if (b) b.style.display = esCal ? '' : 'none';
+    }
+
+    function initCalidadSups(datosEditar) {
+      if (datosEditar && (datosEditar.Rol || '').toString().trim().toLowerCase() === 'calidad') {
+        const asignados = (datosEditar.Supervisor || '').split(/[;|]/).map(x => x.trim().toLowerCase()).filter(Boolean);
+        document.querySelectorAll('.chk-cal-sup').forEach(c => { c.checked = asignados.includes(c.value.toLowerCase()); });
+      }
+      toggleCalidadSups();
     }
 
     function cerrarModal() { 
@@ -1915,11 +1939,17 @@
       let datosRecolectados = {};
       
       document.querySelectorAll('#form-fields input:not([type="file"]), #form-fields select, #form-fields textarea').forEach(input => {
-        if(input.id !== 'frm-URL-Manual') {
+        if(input.id && input.id !== 'frm-URL-Manual') {
             datosRecolectados[input.id.replace('frm-', '')] = input.value;
         }
       });
       
+      if (tablaActual === 'Usuarios' && datosRecolectados.Rol === 'Calidad') {
+        const marcados = [...document.querySelectorAll('.chk-cal-sup:checked')].map(c => c.value);
+        if (marcados.length === 0) return alert('Seleccione al menos un supervisor para el usuario de Calidad.');
+        datosRecolectados.Supervisor = marcados.join('; ');
+      }
+
       mostrarGuardando('Guardando registro...');
       
       if (tablaActual === 'Materiales') {
